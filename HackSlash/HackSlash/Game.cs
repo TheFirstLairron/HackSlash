@@ -10,12 +10,14 @@ namespace HackSlash
     {
         private Dictionary<string, List<Enemy>> Enemies { get; set; }
         private Dictionary<string, Map> Maps { get; set; }
+        private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
         private Map CurrentMap { get; set; }
+        private Level CurrentLevel { get; set; }
 
         public void Play()
         {
@@ -49,6 +51,16 @@ namespace HackSlash
 
         }
 
+        public void AddLevel(string name, Level level)
+        {
+            Levels[name] = level;
+        }
+
+        public void TransitionToLevel(string name)
+        {
+
+        }
+
         public void AddMap(string name, Map map)
         {
             Maps[name] = map;
@@ -59,7 +71,10 @@ namespace HackSlash
             CurrentMap = Maps[name];
             foreach(Enemy enemy in Enemies[CurrentMap.Name])
             {
-                CurrentMap.SetEnemies(enemy.GetCoords());
+                if (enemy.Alive)
+                {
+                    CurrentMap.SetEnemies(enemy.GetCoords());
+                }
             }
         }
 

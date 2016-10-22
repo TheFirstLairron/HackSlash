@@ -94,7 +94,14 @@ namespace HackSlash
             Defense = defense;
             XCoord = x;
             YCoord = y;
-            Alive = true;
+            if (Health > 1)
+            {
+                Alive = true;
+            }
+            else
+            {
+                Alive = false;
+            }
         }
     }
 }

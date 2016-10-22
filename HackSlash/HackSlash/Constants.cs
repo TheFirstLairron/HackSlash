@@ -18,6 +18,13 @@ namespace HackSlash
             WEST
         }
 
+        public enum MAP_CHARS
+        {
+            EMPTY = ' ',
+            ENEMY = '*',
+            CHARACTER = '@'
+        }
+
         public static readonly List<string> mainMenuOptions = new List<string>() { "Main Menu: ", "   -Resume", "   -Inventory", "   -Equipment", "   -Quit" };
     
         public static readonly Tuple<int, int> START_POINT = new Tuple<int, int>(5, 1);
