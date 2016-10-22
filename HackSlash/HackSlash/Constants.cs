@@ -22,7 +22,8 @@ namespace HackSlash
         {
             EMPTY = ' ',
             ENEMY = '*',
-            CHARACTER = '@'
+            CHARACTER = '@',
+            EXIT = '0'
         }
 
         public static readonly List<string> mainMenuOptions = new List<string>() { "Main Menu: ", "   -Resume", "   -Inventory", "   -Equipment", "   -Quit" };

@@ -25,10 +25,7 @@ namespace HackSlash
         {
             int trueDamage = 0;
 
-            if(potentialDamage - Defense > 0)
-            {
-                trueDamage = potentialDamage - Defense;
-            }
+            trueDamage = Math.Max(potentialDamage - Defense, 0);
 
             Health -= trueDamage;
         }
@@ -64,39 +61,6 @@ namespace HackSlash
         {
             XCoord = coords.Item1;
             YCoord = coords.Item2;
-        }
-
-        public void Move(Map map, Constants.DIRECTION dir)
-        {
-            Tuple<int, int> posToCheck = GetCoords();
-            int xToCheck = posToCheck.Item1;
-            int yToCheck = posToCheck.Item2;
-
-            switch (dir)
-            {
-                case Constants.DIRECTION.NORTH:
-                    xToCheck--;
-                    break;
-
-                case Constants.DIRECTION.EAST:
-                    yToCheck++;
-                    break;
-
-                case Constants.DIRECTION.SOUTH:
-                    xToCheck++;
-                    break;
-
-                case Constants.DIRECTION.WEST:
-                    yToCheck--;
-                    break;
-            }
-
-            if(map.Board[xToCheck, yToCheck] == ' ')
-            {
-                map.Board[posToCheck.Item1, posToCheck.Item2] = ' ';
-                map.Board[xToCheck, yToCheck] = '@';
-                this.SetCoords(new Tuple<int, int>(xToCheck, yToCheck));
-            }
         }
 
         public void Attack(Map map, List<Enemy> enemies)

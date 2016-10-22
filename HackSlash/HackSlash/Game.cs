@@ -31,7 +31,6 @@ namespace HackSlash
                 DisplayUI();
                 if (HandleInput(GetUserInput()))
                 {
-
                     foreach (Enemy enemy in Enemies[CurrentMap.Name])
                     {
                         if (enemy.Alive)
@@ -95,19 +94,36 @@ namespace HackSlash
 
             if (Constants.allowedKeys.Contains(key.Key))
             {
+                LevelTransition newLevel = null;
                 switch (key.Key)
                 {
                     case ConsoleKey.W:
-                        Player.Move(CurrentMap, Constants.DIRECTION.NORTH);
+                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.NORTH, true);
+                        if (newLevel != null)
+                        {
+                            // TODO Change Level
+                        }
                         break;
                     case ConsoleKey.A:
-                        Player.Move(CurrentMap, Constants.DIRECTION.WEST);
+                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.WEST, true);
+                        if(newLevel != null)
+                        {
+                            // TODO Change Level
+                        }
                         break;
                     case ConsoleKey.S:
-                        Player.Move(CurrentMap, Constants.DIRECTION.SOUTH);
+                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.SOUTH, true);
+                        if(newLevel != null)
+                        {
+                            // TODO Change Level
+                        }
                         break;
                     case ConsoleKey.D:
-                        Player.Move(CurrentMap, Constants.DIRECTION.EAST);
+                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.EAST, true);
+                        if(newLevel != null)
+                        {
+                            // TODO Change Level
+                        }
                         break;
                     case ConsoleKey.Spacebar:
                         Player.Attack(CurrentMap, Enemies[CurrentMap.Name].Where(x => x.Alive).ToList());
@@ -249,10 +265,6 @@ namespace HackSlash
                                 index = Player.Inventory.Items.Count - 1;
                             }
                             break;
-                        case ConsoleKey.U:
-                            item.UseItem(Player);
-                            loop = false;
-                            break;
                         case ConsoleKey.Enter:
                             item.UseItem(Player);
                             loop = false;
@@ -306,10 +318,6 @@ namespace HackSlash
                             {
                                 index = Player.Inventory.Weapons.Count - 1;
                             }
-                            break;
-                        case ConsoleKey.E:
-                            Player.Equip(weapon);
-                            loop = false;
                             break;
                         case ConsoleKey.Enter:
                             Player.Equip(weapon);

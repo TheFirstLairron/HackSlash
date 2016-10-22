@@ -12,5 +12,13 @@ namespace HackSlash
         public string LevelTo { get; set; }
         public Tuple<int, int> ExitLocation { get; set; }
         public Tuple<int, int> NewLocation { get; set; }
+
+        public LevelTransition(string from, string to, Tuple<int, int> exit, Tuple<int, int> newLoc)
+        {
+            LevelFrom = from;
+            LevelTo = to;
+            ExitLocation = exit;
+            NewLocation = newLoc;
+        }
     }
 }
