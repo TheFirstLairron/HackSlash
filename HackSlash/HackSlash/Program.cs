@@ -28,9 +28,9 @@ namespace HackSlash
             game.RegisterItem(item.Name, item);
             game.RegisterItem(item2.Name, item2);
 
-            game.RegisterEnemy(Constants.FIRST_MAP_NAME, new Enemy(0, 0, 9, 9));
+            game.RegisterEnemy(Constants.FIRST_MAP_NAME, new Enemy(0, 5, 0, 9, 9));
 
-            game.RegisterEnemy(Constants.FIRST_MAP_NAME, new Enemy(10, 0, 8, 8));
+            game.RegisterEnemy(Constants.FIRST_MAP_NAME, new Enemy(10, 5, 0, 8, 8));
 
             game.AddMap(Constants.FIRST_MAP_NAME, new Map(Constants.FIRST_MAP_NAME, constants.firstMap, Constants.START_POINT));
 

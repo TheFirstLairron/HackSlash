@@ -35,7 +35,7 @@ namespace HackSlash
                     {
                         if (enemy.Alive)
                         {
-                            enemy.Move(CurrentMap, Player, Enemies[CurrentMap.Name]);
+                            CurrentLevel.MoveEnemy(enemy, Player);
                         }
                     }
                 }
@@ -55,9 +55,9 @@ namespace HackSlash
             Levels[name] = level;
         }
 
-        public void TransitionToLevel(string name)
+        public void TransitionToLevel(LevelTransition level)
         {
-
+            CurrentLevel = Levels[level.LevelTo];
         }
 
         public void AddMap(string name, Map map)
@@ -98,28 +98,28 @@ namespace HackSlash
                 switch (key.Key)
                 {
                     case ConsoleKey.W:
-                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.NORTH, true);
+                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
                         if (newLevel != null)
                         {
                             // TODO Change Level
                         }
                         break;
                     case ConsoleKey.A:
-                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.WEST, true);
+                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
                         if(newLevel != null)
                         {
                             // TODO Change Level
                         }
                         break;
                     case ConsoleKey.S:
-                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.SOUTH, true);
+                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
                         if(newLevel != null)
                         {
                             // TODO Change Level
                         }
                         break;
                     case ConsoleKey.D:
-                        newLevel = CurrentLevel.MoveEntity(Player.GetCoords(), Constants.DIRECTION.EAST, true);
+                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
                         if(newLevel != null)
                         {
                             // TODO Change Level
@@ -344,6 +344,7 @@ namespace HackSlash
         {
             Enemies = new Dictionary<string, List<Enemy>>();
             Maps = new Dictionary<string, Map>();
+            Levels = new Dictionary<string, Level>();
             Constants = new Constants();
             Player = new Player(Constants.START_POINT.Item1, Constants.START_POINT.Item2);
             Weapons = new Dictionary<string, Weapon>();

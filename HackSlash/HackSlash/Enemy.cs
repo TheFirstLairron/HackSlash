@@ -9,6 +9,7 @@ namespace HackSlash
     public class Enemy
     {
         public int Health { get; private set; }
+        private int Attack { get; set; }
         private int Defense { get; set; }
         private int XCoord { get; set; }
         private int YCoord { get; set; }
@@ -29,6 +30,11 @@ namespace HackSlash
             {
                 Kill(map);
             }
+        }
+
+        public int GetDamage()
+        {
+            return Attack;
         }
 
         public void Kill(Map map)
@@ -88,9 +94,10 @@ namespace HackSlash
             return canMove;
         }
 
-        public Enemy(int health = 10, int defense = 10, int x = 0, int y = 0)
+        public Enemy(int health = 10, int attack = 5, int defense = 10, int x = 0, int y = 0)
         {
             Health = health;
+            Attack = attack;
             Defense = defense;
             XCoord = x;
             YCoord = y;
