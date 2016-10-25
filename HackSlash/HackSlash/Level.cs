@@ -10,7 +10,7 @@ namespace HackSlash
     {
         public string Name { get; private set; }
         public Char[,] Map { get; private set; }
-        public LevelTransition[] Exits { get; set; }
+        public List<LevelTransition> Exits { get; set; }
 
         public LevelTransition MovePlayer(Player player, Constants.DIRECTION dir)
         {
@@ -50,6 +50,7 @@ namespace HackSlash
                 if(Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EXIT)
                 {
                     newLevel = Exits.Where(x => x.ExitLocation.Item1 == xToCheck && x.ExitLocation.Item2 == yToCheck).FirstOrDefault();
+                    ResetCell(player.GetCoords());
                 }
             }
 
@@ -73,7 +74,7 @@ namespace HackSlash
                 {
                     Tuple<int, int> lastLoc = enemy.GetCoords();
                     Map[nextMove.Item1, nextMove.Item2] = (char)Constants.MAP_CHARS.ENEMY;
-                    Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.ENEMY;
+                    Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
                     enemy.SetCoords(nextMove);
                 }
                 else if (player.GetCoords().Item1 == nextMove.Item1 && player.GetCoords().Item2 == nextMove.Item2)
@@ -85,9 +86,22 @@ namespace HackSlash
             return moved;
         }
 
+        public void PlacePlayer(Tuple<int, int> location, Player player)
+        {
+            Map[location.Item1, location.Item2] = (char)Constants.MAP_CHARS.CHARACTER;
+            player.SetCoords(location);
+        }
+
         public void ResetCell(Tuple<int, int> cell)
         {
             Map[cell.Item1, cell.Item2] = (char)Constants.MAP_CHARS.EMPTY;
+        }
+
+        public Level(string name, Char[,] map, List<LevelTransition> exits)
+        {
+            Name = name;
+            Map = map;
+            Exits = exits;
         }
     }
 }

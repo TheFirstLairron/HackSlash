@@ -58,6 +58,7 @@ namespace HackSlash
         public void TransitionToLevel(LevelTransition level)
         {
             CurrentLevel = Levels[level.LevelTo];
+            CurrentLevel.PlacePlayer(level.NewLocation, Player);
         }
 
         public void AddMap(string name, Map map)
@@ -91,39 +92,23 @@ namespace HackSlash
         public bool HandleInput(ConsoleKeyInfo key)
         {
             bool ShouldEnemyMove = true;
+            LevelTransition newLevel = null;
 
             if (Constants.allowedKeys.Contains(key.Key))
             {
-                LevelTransition newLevel = null;
                 switch (key.Key)
                 {
                     case ConsoleKey.W:
                         newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
-                        if (newLevel != null)
-                        {
-                            // TODO Change Level
-                        }
                         break;
                     case ConsoleKey.A:
                         newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
-                        if(newLevel != null)
-                        {
-                            // TODO Change Level
-                        }
                         break;
                     case ConsoleKey.S:
                         newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
-                        if(newLevel != null)
-                        {
-                            // TODO Change Level
-                        }
                         break;
                     case ConsoleKey.D:
                         newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
-                        if(newLevel != null)
-                        {
-                            // TODO Change Level
-                        }
                         break;
                     case ConsoleKey.Spacebar:
                         Player.Attack(CurrentMap, Enemies[CurrentMap.Name].Where(x => x.Alive).ToList());
@@ -133,6 +118,11 @@ namespace HackSlash
                         ShouldEnemyMove = false;
                         break;
                 }
+            }
+
+            if(newLevel != null)
+            {
+                TransitionToLevel(newLevel);
             }
 
             return ShouldEnemyMove;
@@ -168,11 +158,11 @@ namespace HackSlash
         public void DisplayMap()
         {
             Console.Clear();
-            for(int i = 0; i < CurrentMap.Board.GetLength(0); i++)
+            for(int i = 0; i < CurrentLevel.Map.GetLength(0); i++)
             {
-                for(int j = 0; j < CurrentMap.Board.GetLength(1); j++)
+                for(int j = 0; j < CurrentLevel.Map.GetLength(1); j++)
                 {
-                    Console.Write(CurrentMap.Board[i, j]);
+                    Console.Write(CurrentLevel.Map[i, j]);
                 }
 
                 Console.WriteLine();
