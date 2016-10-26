@@ -15,7 +15,7 @@ namespace HackSlash
         private int YCoord { get; set; }
         public bool Alive { get; set; }
 
-        public void TakeDamage(int amount, Map map)
+        public void TakeDamage(int amount, Level level)
         {
             int trueDamage = 0;
 
@@ -28,7 +28,7 @@ namespace HackSlash
 
             if(Health <= 0)
             {
-                Kill(map);
+                Kill(level);
             }
         }
 
@@ -37,9 +37,9 @@ namespace HackSlash
             return Attack;
         }
 
-        public void Kill(Map map)
+        public void Kill(Level level)
         {
-            map.ResetCell(GetCoords());
+            level.ResetCell(GetCoords());
             Alive = false;
         }
 
@@ -110,5 +110,6 @@ namespace HackSlash
                 Alive = false;
             }
         }
+
     }
 }

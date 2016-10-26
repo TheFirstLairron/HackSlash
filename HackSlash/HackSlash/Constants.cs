@@ -8,7 +8,15 @@ namespace HackSlash
 {
     public class Constants
     {
-        public static readonly ConsoleKey[] allowedKeys = new ConsoleKey[] { ConsoleKey.A, ConsoleKey.W, ConsoleKey.S, ConsoleKey.D, ConsoleKey.Escape, ConsoleKey.Spacebar };
+        public static readonly ConsoleKey[] allowedKeys = new ConsoleKey[] 
+        {
+            ConsoleKey.A,
+            ConsoleKey.W,
+            ConsoleKey.S,
+            ConsoleKey.D,
+            ConsoleKey.Escape,
+            ConsoleKey.Spacebar
+        };
 
         public enum DIRECTION
         {
@@ -26,11 +34,16 @@ namespace HackSlash
             EXIT = '0'
         }
 
-        public static readonly List<string> mainMenuOptions = new List<string>() { "Main Menu: ", "   -Resume", "   -Inventory", "   -Equipment", "   -Quit" };
+        public static readonly List<string> mainMenuOptions = new List<string>()
+        {
+            "Main Menu: ",
+            "   -Resume",
+            "   -Inventory",
+            "   -Equipment",
+            "   -Quit"
+        };
     
         public static readonly Tuple<int, int> START_POINT = new Tuple<int, int>(5, 1);
-
-        public static readonly char WALL = '#';
 
         public const string FIRST_MAP_NAME = "First Level";
 

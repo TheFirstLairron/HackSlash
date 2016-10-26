@@ -8,7 +8,6 @@ namespace HackSlash
 {
     public class Game
     {
-        private Dictionary<string, List<Enemy>> Enemies { get; set; }
         private Dictionary<string, Map> Maps { get; set; }
         private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
@@ -31,13 +30,13 @@ namespace HackSlash
                 DisplayUI();
                 if (HandleInput(GetUserInput()))
                 {
-                    foreach (Enemy enemy in Enemies[CurrentMap.Name])
-                    {
-                        if (enemy.Alive)
-                        {
-                            CurrentLevel.MoveEnemy(enemy, Player);
-                        }
-                    }
+                    //foreach (Enemy enemy in Enemies[CurrentMap.Name])
+                    //{
+                    //    if (enemy.Alive)
+                    //    {
+                    //        CurrentLevel.MoveEnemy(enemy, Player);
+                    //    }
+                    //}
                 }
 
                 if (!Player.Alive())
@@ -59,23 +58,6 @@ namespace HackSlash
         {
             CurrentLevel = Levels[level.LevelTo];
             CurrentLevel.PlacePlayer(level.NewLocation, Player);
-        }
-
-        public void AddMap(string name, Map map)
-        {
-            Maps[name] = map;
-        }
-
-        public void SetMap(string name)
-        {
-            CurrentMap = Maps[name];
-            foreach(Enemy enemy in Enemies[CurrentMap.Name])
-            {
-                if (enemy.Alive)
-                {
-                    CurrentMap.SetEnemies(enemy.GetCoords());
-                }
-            }
         }
 
         public ConsoleKeyInfo GetUserInput()
@@ -111,7 +93,7 @@ namespace HackSlash
                         newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
                         break;
                     case ConsoleKey.Spacebar:
-                        Player.Attack(CurrentMap, Enemies[CurrentMap.Name].Where(x => x.Alive).ToList());
+                        Player.Attack(CurrentLevel);
                         break;
                     case ConsoleKey.Escape:
                         DisplayMenu();
@@ -126,16 +108,6 @@ namespace HackSlash
             }
 
             return ShouldEnemyMove;
-        }
-
-        public void RegisterEnemy(string name, Enemy enemy)
-        {
-            if(!Enemies.Keys.Contains(name))
-            {
-                Enemies[name] = new List<Enemy>();
-            }
-
-            Enemies[name].Add(enemy);
         }
 
         public void RegisterWeapon(string name, Weapon weapon)
@@ -332,7 +304,6 @@ namespace HackSlash
 
         public Game()
         {
-            Enemies = new Dictionary<string, List<Enemy>>();
             Maps = new Dictionary<string, Map>();
             Levels = new Dictionary<string, Level>();
             Constants = new Constants();

@@ -11,6 +11,7 @@ namespace HackSlash
         public string Name { get; private set; }
         public Char[,] Map { get; private set; }
         public List<LevelTransition> Exits { get; set; }
+        public List<Enemy> Enemies { get; set; }
 
         public LevelTransition MovePlayer(Player player, Constants.DIRECTION dir)
         {
@@ -44,6 +45,7 @@ namespace HackSlash
                 Map[xToCheck, yToCheck] = entity;
                 Map[playerLoc.Item1, playerLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
                 player.SetCoords(Tuple.Create(xToCheck, yToCheck));
+                MoveEnemies(player);
             }
             else 
             {
@@ -57,33 +59,35 @@ namespace HackSlash
             return newLevel;
         }
 
-        public bool MoveEnemy(Enemy enemy, Player player)
+        public void MoveEnemies(Player player)
         {
-            bool moved = false;
-
-            BreadthFirstSearch search = new BreadthFirstSearch();
-
-            var graph = search.GenerateMap(Map, enemy.GetCoords(), player.GetCoords());
-
-            var path = search.GatherPath(graph, player.GetCoords());
-
-            if(path.Count > 1)
+            foreach (Enemy enemy in Enemies)
             {
-                Tuple<int, int> nextMove = path.ElementAt(1);
-                if (Map[nextMove.Item1, nextMove.Item2] == (char)Constants.MAP_CHARS.EMPTY)
+                if (enemy.Alive)
                 {
-                    Tuple<int, int> lastLoc = enemy.GetCoords();
-                    Map[nextMove.Item1, nextMove.Item2] = (char)Constants.MAP_CHARS.ENEMY;
-                    Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
-                    enemy.SetCoords(nextMove);
-                }
-                else if (player.GetCoords().Item1 == nextMove.Item1 && player.GetCoords().Item2 == nextMove.Item2)
-                {
-                    player.TakeDamage(enemy.GetDamage());
+                    BreadthFirstSearch search = new BreadthFirstSearch();
+
+                    var graph = search.GenerateMap(Map, enemy.GetCoords(), player.GetCoords());
+
+                    var path = search.GatherPath(graph, player.GetCoords());
+
+                    if (path.Count > 1)
+                    {
+                        Tuple<int, int> nextMove = path.ElementAt(1);
+                        if (Map[nextMove.Item1, nextMove.Item2] == (char)Constants.MAP_CHARS.EMPTY)
+                        {
+                            Tuple<int, int> lastLoc = enemy.GetCoords();
+                            Map[nextMove.Item1, nextMove.Item2] = (char)Constants.MAP_CHARS.ENEMY;
+                            Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
+                            enemy.SetCoords(nextMove);
+                        }
+                        else if (player.GetCoords().Item1 == nextMove.Item1 && player.GetCoords().Item2 == nextMove.Item2)
+                        {
+                            player.TakeDamage(enemy.GetDamage());
+                        }
+                    }
                 }
             }
-
-            return moved;
         }
 
         public void PlacePlayer(Tuple<int, int> location, Player player)
@@ -97,11 +101,30 @@ namespace HackSlash
             Map[cell.Item1, cell.Item2] = (char)Constants.MAP_CHARS.EMPTY;
         }
 
-        public Level(string name, Char[,] map, List<LevelTransition> exits)
+        public void PlaceEnemies()
+        {
+            foreach(Enemy enemy in Enemies)
+            {
+                if (enemy.Alive)
+                {
+                    Map[enemy.GetCoords().Item1, enemy.GetCoords().Item2] = (char)Constants.MAP_CHARS.ENEMY;
+                }
+            }
+        }
+
+        public Level(string name, Char[,] map, List<LevelTransition> exits, List<Enemy> enemies = null)
         {
             Name = name;
             Map = map;
             Exits = exits;
+            Enemies = enemies;
+
+            if(Enemies == null)
+            {
+                Enemies = new List<Enemy>();
+            }
+
+            PlaceEnemies();
         }
     }
 }

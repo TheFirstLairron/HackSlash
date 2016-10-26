@@ -63,13 +63,13 @@ namespace HackSlash
             YCoord = coords.Item2;
         }
 
-        public void Attack(Map map, List<Enemy> enemies)
+        public void Attack(Level level)
         {
-            foreach(Enemy enemy in enemies)
+            foreach(Enemy enemy in level.Enemies)
             {
                 if (isEnemyNeighbor(enemy))
                 {
-                    enemy.TakeDamage(GetDamage(), map);
+                    enemy.TakeDamage(GetDamage(), level);
                 }
             }
         }
