@@ -54,46 +54,6 @@ namespace HackSlash
             YCoord = coords.Item2;
         }
 
-        public void Move(Map map, Player player, List<Enemy> enemies)
-        {
-            BreadthFirstSearch bfs = new BreadthFirstSearch();
-
-            Tuple<int, int> selfCoords = this.GetCoords();
-            Tuple<int, int> nextMove = null;
-
-            var graph = bfs.GenerateMap(map.Board, selfCoords, player.GetCoords());
-
-            var path = bfs.GatherPath(graph, player.GetCoords());
-
-            if(path.Count > 1)
-            {
-                nextMove = path.ElementAt(1);
-                if (CanMove(nextMove, map))
-                {
-                    this.SetCoords(nextMove);
-                    map.Board[selfCoords.Item1, selfCoords.Item2] = ' ';
-                    map.Board[nextMove.Item1, nextMove.Item2] = '*';
-                }
-            }
-            else if(path.Count == 1)
-            {
-                player.TakeDamage(10);
-            }
-
-
-        }
-
-        bool CanMove(Tuple<int, int> pos, Map map)
-        {
-            bool canMove = true;
-            if (map.Board[pos.Item1, pos.Item2] != ' ')
-            {
-                canMove = false;
-            }
-
-            return canMove;
-        }
-
         public Enemy(int health = 10, int attack = 5, int defense = 10, int x = 0, int y = 0)
         {
             Health = health;

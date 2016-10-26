@@ -65,25 +65,28 @@ namespace HackSlash
             {
                 if (enemy.Alive)
                 {
-                    BreadthFirstSearch search = new BreadthFirstSearch();
-
-                    var graph = search.GenerateMap(Map, enemy.GetCoords(), player.GetCoords());
-
-                    var path = search.GatherPath(graph, player.GetCoords());
-
-                    if (path.Count > 1)
+                    if (AreNeighbors(player, enemy))
                     {
-                        Tuple<int, int> nextMove = path.ElementAt(1);
-                        if (Map[nextMove.Item1, nextMove.Item2] == (char)Constants.MAP_CHARS.EMPTY)
+                        player.TakeDamage(enemy.GetDamage());
+                    }
+                    else
+                    {
+                        BreadthFirstSearch search = new BreadthFirstSearch();
+
+                        var graph = search.GenerateMap(Map, enemy.GetCoords(), player.GetCoords());
+
+                        var path = search.GatherPath(graph, player.GetCoords());
+
+                        if (path.Count > 1)
                         {
-                            Tuple<int, int> lastLoc = enemy.GetCoords();
-                            Map[nextMove.Item1, nextMove.Item2] = (char)Constants.MAP_CHARS.ENEMY;
-                            Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
-                            enemy.SetCoords(nextMove);
-                        }
-                        else if (player.GetCoords().Item1 == nextMove.Item1 && player.GetCoords().Item2 == nextMove.Item2)
-                        {
-                            player.TakeDamage(enemy.GetDamage());
+                            Tuple<int, int> nextMove = path.ElementAt(1);
+                            if (Map[nextMove.Item1, nextMove.Item2] == (char)Constants.MAP_CHARS.EMPTY)
+                            {
+                                Tuple<int, int> lastLoc = enemy.GetCoords();
+                                Map[nextMove.Item1, nextMove.Item2] = (char)Constants.MAP_CHARS.ENEMY;
+                                Map[lastLoc.Item1, lastLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
+                                enemy.SetCoords(nextMove);
+                            }
                         }
                     }
                 }
@@ -96,11 +99,6 @@ namespace HackSlash
             player.SetCoords(location);
         }
 
-        public void ResetCell(Tuple<int, int> cell)
-        {
-            Map[cell.Item1, cell.Item2] = (char)Constants.MAP_CHARS.EMPTY;
-        }
-
         public void PlaceEnemies()
         {
             foreach(Enemy enemy in Enemies)
@@ -110,6 +108,46 @@ namespace HackSlash
                     Map[enemy.GetCoords().Item1, enemy.GetCoords().Item2] = (char)Constants.MAP_CHARS.ENEMY;
                 }
             }
+        }
+
+        public void PlaceExits()
+        {
+            foreach(LevelTransition tran in Exits)
+            {
+                Map[tran.ExitLocation.Item1, tran.ExitLocation.Item2] = (char)Constants.MAP_CHARS.EXIT;
+            }
+        }
+
+        public void ResetCell(Tuple<int, int> cell)
+        {
+            Map[cell.Item1, cell.Item2] = (char)Constants.MAP_CHARS.EMPTY;
+        }
+
+        public bool AreNeighbors(Player player, Enemy enemy)
+        {
+            bool isNeighbor = false;
+
+            Tuple<int, int> plLoc = player.GetCoords();
+            Tuple<int, int> enLoc = enemy.GetCoords();
+
+            if(plLoc.Item1 == enLoc.Item1 && plLoc.Item2 == enLoc.Item2 + 1)
+            {
+                isNeighbor = true;
+            }
+            else if(plLoc.Item1 == enLoc.Item1 && plLoc.Item2 == enLoc.Item2 - 1)
+            {
+                isNeighbor = true;
+            }
+            else if(plLoc.Item1 == enLoc.Item1 + 1 && plLoc.Item2 == enLoc.Item2)
+            {
+                isNeighbor = true;
+            }
+            else if(plLoc.Item1 == enLoc.Item1 - 1 && plLoc.Item2 == enLoc.Item2)
+            {
+                isNeighbor = true;
+            }
+
+            return isNeighbor;
         }
 
         public Level(string name, Char[,] map, List<LevelTransition> exits, List<Enemy> enemies = null)
@@ -124,6 +162,7 @@ namespace HackSlash
                 Enemies = new List<Enemy>();
             }
 
+            PlaceExits();
             PlaceEnemies();
         }
     }

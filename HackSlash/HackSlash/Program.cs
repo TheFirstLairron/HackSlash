@@ -10,7 +10,6 @@ namespace HackSlash
     {
         static void Main(string[] args)
         {
-            Constants constants = new Constants();
             Game game = new Game();
             game.RegisterWeapon("TestingWeapon", new Weapon("TestingWeapon", "A Testing Weapon", 5));
             game.RegisterWeapon("Mega", new Weapon("Mega", "The Mega Weapon", 500));
@@ -25,21 +24,26 @@ namespace HackSlash
                 Player.Heal(5);
             });
 
+            #region Level1
             List<LevelTransition> levelOneExits = new List<LevelTransition>();
             levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
 
             List<Enemy> level1Enemies = new List<Enemy>();
-
-            level1Enemies.Add(new Enemy(0, 5, 0, 9, 9));
-
-            level1Enemies.Add(new Enemy(10, 5, 0, 8, 8));
+            level1Enemies.Add(new Enemy(0, 10, 0, 9, 9));
+            level1Enemies.Add(new Enemy(10, 10, 0, 8, 8));
 
             Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies);
+            #endregion
 
+            #region level2
             List<LevelTransition> levelTwoExits = new List<LevelTransition>();
             levelTwoExits.Add(new LevelTransition("Second Level", "First Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
 
-            Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits);
+            List<Enemy> level2Enemies = new List<Enemy>();
+            level2Enemies.Add(new Enemy(10, 5, 0, 9, 1));
+
+            Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits, level2Enemies);
+            #endregion
 
             game.RegisterItem(item.Name, item);
             game.RegisterItem(item2.Name, item2);

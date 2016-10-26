@@ -51,7 +51,6 @@
     <Compile Include="Inventory.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelTransition.cs" />
-    <Compile Include="Map.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

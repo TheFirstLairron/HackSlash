@@ -8,14 +8,12 @@ namespace HackSlash
 {
     public class Game
     {
-        private Dictionary<string, Map> Maps { get; set; }
         private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
-        private Map CurrentMap { get; set; }
         private Level CurrentLevel { get; set; }
 
         public void Play()
@@ -63,11 +61,14 @@ namespace HackSlash
         public ConsoleKeyInfo GetUserInput()
         {
             ConsoleKeyInfo cki = new ConsoleKeyInfo();
+
             do
             {
+
                 cki = Console.ReadKey(true);
 
             } while (!Constants.allowedKeys.Contains(cki.Key));
+
             return cki;
         }
 
@@ -76,30 +77,29 @@ namespace HackSlash
             bool ShouldEnemyMove = true;
             LevelTransition newLevel = null;
 
-            if (Constants.allowedKeys.Contains(key.Key))
+            switch (key.Key)
             {
-                switch (key.Key)
-                {
-                    case ConsoleKey.W:
-                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
-                        break;
-                    case ConsoleKey.A:
-                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
-                        break;
-                    case ConsoleKey.S:
-                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
-                        break;
-                    case ConsoleKey.D:
-                        newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
-                        break;
-                    case ConsoleKey.Spacebar:
-                        Player.Attack(CurrentLevel);
-                        break;
-                    case ConsoleKey.Escape:
-                        DisplayMenu();
-                        ShouldEnemyMove = false;
-                        break;
-                }
+                case ConsoleKey.W:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
+                    break;
+                case ConsoleKey.A:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
+                    break;
+                case ConsoleKey.S:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
+                    break;
+                case ConsoleKey.D:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
+                    break;
+                case ConsoleKey.Spacebar:
+                    Player.Attack(CurrentLevel);
+                    break;
+                case ConsoleKey.Escape:
+                    DisplayMenu();
+                    ShouldEnemyMove = false;
+                    break;
+                default:
+                    break;
             }
 
             if(newLevel != null)
@@ -304,10 +304,9 @@ namespace HackSlash
 
         public Game()
         {
-            Maps = new Dictionary<string, Map>();
             Levels = new Dictionary<string, Level>();
             Constants = new Constants();
-            Player = new Player(Constants.START_POINT.Item1, Constants.START_POINT.Item2);
+            Player = new Player();
             Weapons = new Dictionary<string, Weapon>();
             UsableItems = new Dictionary<string, UsableItem>();
             Running = true;

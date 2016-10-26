@@ -72,6 +72,8 @@ namespace HackSlash
                     enemy.TakeDamage(GetDamage(), level);
                 }
             }
+
+            level.MoveEnemies(this);
         }
 
         private bool isEnemyNeighbor(Enemy enemy)
@@ -101,13 +103,11 @@ namespace HackSlash
             return isNeighbor;
         }
 
-        public Player(int x, int y, int health = 30)
+        public Player(int health = 30)
         {
             Health = health;
             Defense = 5;
             Damage = 5;
-            XCoord = x;
-            YCoord = y;
             Inventory = new Inventory();
         }
     }
