@@ -8,6 +8,7 @@ namespace HackSlash
 {
     public class Constants
     {
+        // A list of the allowed keys for user input
         public static readonly List<ConsoleKey> allowedKeys = new List<ConsoleKey>() 
         {
             ConsoleKey.A,
@@ -34,6 +35,7 @@ namespace HackSlash
             EXIT = '0'
         }
 
+        // The main menu
         public static readonly List<string> mainMenuOptions = new List<string>()
         {
             "Main Menu: ",

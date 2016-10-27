@@ -16,26 +16,20 @@ namespace HackSlash
         private Constants Constants { get; set; }
         private Level CurrentLevel { get; set; }
 
+        // This method will initiate play and manage the game logic
         public void Play()
         {
+            // Adding weapons and usable items for testing
             Player.Inventory.AddWeapon(Weapons["TestingWeapon"]);
             Player.Inventory.AddWeapon(Weapons["Mega"]);
             Player.Inventory.AddItem(UsableItems["Testing Item"]);
             Player.Inventory.AddItem(UsableItems["Testing Item 2"]);
 
+            // Main game loop
             do
             {
                 DisplayUI();
-                if (HandleInput(GetUserInput()))
-                {
-                    //foreach (Enemy enemy in Enemies[CurrentMap.Name])
-                    //{
-                    //    if (enemy.Alive)
-                    //    {
-                    //        CurrentLevel.MoveEnemy(enemy, Player);
-                    //    }
-                    //}
-                }
+                HandleInput(GetUserInput());
 
                 if (!Player.Alive())
                 {
@@ -47,24 +41,26 @@ namespace HackSlash
 
         }
 
+        // Register a level to be transitioned to
         public void AddLevel(string name, Level level)
         {
             Levels[name] = level;
         }
 
+        // Move from one level to another
         public void TransitionToLevel(LevelTransition level)
         {
             CurrentLevel = Levels[level.LevelTo];
             CurrentLevel.PlacePlayer(level.NewLocation, Player);
         }
 
+        // Gather input from the console
         public ConsoleKeyInfo GetUserInput()
         {
             ConsoleKeyInfo cki = new ConsoleKeyInfo();
 
             do
             {
-
                 cki = Console.ReadKey(true);
 
             } while (!Constants.allowedKeys.Contains(cki.Key));
@@ -72,11 +68,12 @@ namespace HackSlash
             return cki;
         }
 
-        public bool HandleInput(ConsoleKeyInfo key)
+        // Handle user input and transition to new level if needed
+        public void HandleInput(ConsoleKeyInfo key)
         {
-            bool ShouldEnemyMove = true;
             LevelTransition newLevel = null;
 
+            // Different user actions
             switch (key.Key)
             {
                 case ConsoleKey.W:
@@ -96,7 +93,6 @@ namespace HackSlash
                     break;
                 case ConsoleKey.Escape:
                     DisplayMenu();
-                    ShouldEnemyMove = false;
                     break;
                 default:
                     break;
@@ -106,20 +102,21 @@ namespace HackSlash
             {
                 TransitionToLevel(newLevel);
             }
-
-            return ShouldEnemyMove;
         }
 
+        // Register a weapon to be used by the player
         public void RegisterWeapon(string name, Weapon weapon)
         {
             Weapons[name] = weapon;
         }
 
+        // Register a consumable item for the player
         public void RegisterItem(string name, UsableItem item)
         {
             UsableItems[name] = item;
         }
 
+        #region UIMethods
         public void DisplayGameOver()
         {
             Console.Clear();
@@ -301,6 +298,7 @@ namespace HackSlash
                 Console.ReadKey(true);
             }
         }
+        #endregion
 
         public Game()
         {

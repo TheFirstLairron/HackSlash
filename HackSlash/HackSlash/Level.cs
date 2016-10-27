@@ -13,6 +13,7 @@ namespace HackSlash
         public List<LevelTransition> Exits { get; set; }
         public List<Enemy> Enemies { get; set; }
 
+        // Move the player, and return a new level if applicable
         public LevelTransition MovePlayer(Player player, Constants.DIRECTION dir)
         {
             LevelTransition newLevel = null;
@@ -59,6 +60,7 @@ namespace HackSlash
             return newLevel;
         }
 
+        // Move the enemies that are currently alive in the level
         public void MoveEnemies(Player player)
         {
             foreach (Enemy enemy in Enemies)
@@ -93,12 +95,14 @@ namespace HackSlash
             }
         }
 
+        // Place the player at a specific location
         public void PlacePlayer(Tuple<int, int> location, Player player)
         {
             Map[location.Item1, location.Item2] = (char)Constants.MAP_CHARS.CHARACTER;
             player.SetCoords(location);
         }
 
+        // Place the enemies at their starting locations
         public void PlaceEnemies()
         {
             foreach(Enemy enemy in Enemies)
@@ -110,6 +114,7 @@ namespace HackSlash
             }
         }
 
+        // Place the exits at thier proper location
         public void PlaceExits()
         {
             foreach(LevelTransition tran in Exits)
@@ -118,11 +123,13 @@ namespace HackSlash
             }
         }
 
+        // Set a specific XY location to an empty cell
         public void ResetCell(Tuple<int, int> cell)
         {
             Map[cell.Item1, cell.Item2] = (char)Constants.MAP_CHARS.EMPTY;
         }
 
+        // Determine if the player and an enemy are neighbors
         public bool AreNeighbors(Player player, Enemy enemy)
         {
             bool isNeighbor = false;

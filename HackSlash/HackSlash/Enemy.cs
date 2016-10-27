@@ -15,6 +15,7 @@ namespace HackSlash
         private int YCoord { get; set; }
         public bool Alive { get; set; }
 
+        // Deal damage to the enemy
         public void TakeDamage(int amount, Level level)
         {
             int trueDamage = 0;
@@ -32,22 +33,26 @@ namespace HackSlash
             }
         }
 
+        // Get the enemy's raw damage
         public int GetDamage()
         {
             return Attack;
         }
 
+        // Remove the enemy from the level
         public void Kill(Level level)
         {
             level.ResetCell(GetCoords());
             Alive = false;
         }
 
+        // Get the XY coordinates of the enemy
         public Tuple<int, int> GetCoords()
         {
             return Tuple.Create(XCoord, YCoord);
         }
 
+        // Set the XY coordinates of the enemy
         public void SetCoords(Tuple<int, int> coords)
         {
             XCoord = coords.Item1;

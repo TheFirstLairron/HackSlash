@@ -16,11 +16,13 @@ namespace HackSlash
         private int XCoord { get; set; }
         private int YCoord { get; set; }
 
+        // Determine if the player is still alive
         public bool Alive()
         {
             return Health > 0;
         }
 
+        // Damage the player
         public void TakeDamage(int potentialDamage)
         {
             int trueDamage = 0;
@@ -30,11 +32,13 @@ namespace HackSlash
             Health -= trueDamage;
         }
 
+        // Heal the player
         public void Heal(int amount)
         {
             Health += amount;
         }
 
+        // Get the damage the player would deal, taking weapon into account
         public int GetDamage()
         {
             int damage = Damage;
@@ -47,22 +51,26 @@ namespace HackSlash
             return damage;
         }
 
+        // Allow the player to equip a weapon
         public void Equip(Weapon weapon)
         {
             Weapon = weapon;
         }
 
+        // Get the players XY coordinates
         public Tuple<int, int> GetCoords()
         {
             return Tuple.Create(XCoord, YCoord);
         }
 
+        // Set the players XY coordinates
         public void SetCoords(Tuple<int, int> coords)
         {
             XCoord = coords.Item1;
             YCoord = coords.Item2;
         }
 
+        // Attack adjacent enemies
         public void Attack(Level level)
         {
             foreach(Enemy enemy in level.Enemies)
@@ -76,6 +84,7 @@ namespace HackSlash
             level.MoveEnemies(this);
         }
 
+        // Detemine if an enemy is in range for attacking
         private bool isEnemyNeighbor(Enemy enemy)
         {
             bool isNeighbor = false;
