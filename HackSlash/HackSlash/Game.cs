@@ -204,6 +204,7 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Items.Count}");
                     Console.WriteLine("Item: " + item.Name);
                     Console.WriteLine("Description: " + item.Description);
                     Console.WriteLine("Amount: " + item.Amount);
@@ -235,7 +236,10 @@ namespace HackSlash
                             break;
                     }
 
-                    item = Player.Inventory.Items.ElementAt(index);
+                    if (loop)
+                    {
+                        item = Player.Inventory.Items.ElementAt(index);
+                    }
 
                 } while (loop);
             }
@@ -258,6 +262,7 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Weapons.Count}");
                     Console.WriteLine("Weapon: " + weapon.Name);
                     Console.WriteLine("Description: " + weapon.Description);
                     Console.WriteLine("Power: " + weapon.Strength);
@@ -289,7 +294,11 @@ namespace HackSlash
                             break;
                     }
 
-                    weapon = Player.Inventory.Weapons.ElementAt(index);
+                    if (loop)
+                    {
+                        weapon = Player.Inventory.Weapons.ElementAt(index);
+                    }
+
                 } while (loop);
             }
             else

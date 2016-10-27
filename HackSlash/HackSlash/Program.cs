@@ -14,12 +14,12 @@ namespace HackSlash
             game.RegisterWeapon("TestingWeapon", new Weapon("TestingWeapon", "A Testing Weapon", 5));
             game.RegisterWeapon("Mega", new Weapon("Mega", "The Mega Weapon", 500));
 
-            HealingItem item = new HealingItem(4, "An Item that heals 10 health", false, "Testing Item", (Player) =>
+            HealingItem item = new HealingItem(1, "An Item that heals 10 health", false, "Testing Item", (Player) =>
             {
                 Player.Heal(10);
             });
 
-            HealingItem item2 = new HealingItem(4, "An Item that heals 5 health", false, "Testing Item 2", (Player) =>
+            HealingItem item2 = new HealingItem(1, "An Item that heals 5 health", false, "Testing Item 2", (Player) =>
             {
                 Player.Heal(5);
             });
