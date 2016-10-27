@@ -8,7 +8,16 @@ namespace HackSlash
 {
     public class Constants
     {
-        public static readonly ConsoleKey[] allowedKeys = new ConsoleKey[] { ConsoleKey.A, ConsoleKey.W, ConsoleKey.S, ConsoleKey.D, ConsoleKey.Escape, ConsoleKey.Spacebar };
+        // A list of the allowed keys for user input
+        public static readonly List<ConsoleKey> allowedKeys = new List<ConsoleKey>() 
+        {
+            ConsoleKey.A,
+            ConsoleKey.W,
+            ConsoleKey.S,
+            ConsoleKey.D,
+            ConsoleKey.Escape,
+            ConsoleKey.Spacebar
+        };
 
         public enum DIRECTION
         {
@@ -18,15 +27,25 @@ namespace HackSlash
             WEST
         }
 
-        public static readonly List<string> mainMenuOptions = new List<string>() { "Main Menu: ", "   -Resume", "   -Inventory", "   -Equipment", "   -Quit" };
+        public enum MAP_CHARS
+        {
+            EMPTY = ' ',
+            ENEMY = '*',
+            CHARACTER = '@',
+            EXIT = '0'
+        }
+
+        // The main menu
+        public static readonly List<string> mainMenuOptions = new List<string>()
+        {
+            "Main Menu: ",
+            "   -Resume",
+            "   -Inventory",
+            "   -Equipment",
+            "   -Quit"
+        };
     
-        public static readonly Tuple<int, int> START_POINT = new Tuple<int, int>(5, 1);
-
-        public static readonly char WALL = '#';
-
-        public const string FIRST_MAP_NAME = "First Level";
-
-        public char[,] firstMap = new char[,]
+        public static char[,] firstMap = new char[,]
         {
              {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
              {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
@@ -38,6 +57,21 @@ namespace HackSlash
              {'#', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', '#'},
              {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'},
              {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
+        };
+
+        public static char[,] secondMap = new char[,]
+        {
+             {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+             {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
+             {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
+             {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
+             {'#', ' ', '#', ' ', '#', '#', '#', '#', '#', ' ', '#'},
+             {'#', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
+             {'#', '#', '#', '#', ' ', ' ', ' ', '#', '#', ' ', '#'},
+             {'#', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', '#'},
+             {'#', ' ', ' ', '#', ' ', ' ', '#', ' ', ' ', ' ', '#'},
+             {'#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
              {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
         };
     }

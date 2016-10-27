@@ -8,36 +8,28 @@ namespace HackSlash
 {
     public class Game
     {
-        private Dictionary<string, List<Enemy>> Enemies { get; set; }
-        private Dictionary<string, Map> Maps { get; set; }
+        private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
-        private Map CurrentMap { get; set; }
+        private Level CurrentLevel { get; set; }
 
+        // This method will initiate play and manage the game logic
         public void Play()
         {
+            // Adding weapons and usable items for testing
             Player.Inventory.AddWeapon(Weapons["TestingWeapon"]);
             Player.Inventory.AddWeapon(Weapons["Mega"]);
             Player.Inventory.AddItem(UsableItems["Testing Item"]);
             Player.Inventory.AddItem(UsableItems["Testing Item 2"]);
 
+            // Main game loop
             do
             {
                 DisplayUI();
-                if (HandleInput(GetUserInput()))
-                {
-
-                    foreach (Enemy enemy in Enemies[CurrentMap.Name])
-                    {
-                        if (enemy.Alive)
-                        {
-                            enemy.Move(CurrentMap, Player, Enemies[CurrentMap.Name]);
-                        }
-                    }
-                }
+                HandleInput(GetUserInput());
 
                 if (!Player.Alive())
                 {
@@ -49,84 +41,82 @@ namespace HackSlash
 
         }
 
-        public void AddMap(string name, Map map)
+        // Register a level to be transitioned to
+        public void AddLevel(string name, Level level)
         {
-            Maps[name] = map;
+            Levels[name] = level;
         }
 
-        public void SetMap(string name)
+        // Move from one level to another
+        public void TransitionToLevel(LevelTransition level)
         {
-            CurrentMap = Maps[name];
-            foreach(Enemy enemy in Enemies[CurrentMap.Name])
-            {
-                CurrentMap.SetEnemies(enemy.GetCoords());
-            }
+            CurrentLevel = Levels[level.LevelTo];
+            CurrentLevel.PlacePlayer(level.NewLocation, Player);
         }
 
+        // Gather input from the console
         public ConsoleKeyInfo GetUserInput()
         {
             ConsoleKeyInfo cki = new ConsoleKeyInfo();
+
             do
             {
                 cki = Console.ReadKey(true);
 
             } while (!Constants.allowedKeys.Contains(cki.Key));
+
             return cki;
         }
 
-        public bool HandleInput(ConsoleKeyInfo key)
+        // Handle user input and transition to new level if needed
+        public void HandleInput(ConsoleKeyInfo key)
         {
-            bool ShouldEnemyMove = true;
+            LevelTransition newLevel = null;
 
-            if (Constants.allowedKeys.Contains(key.Key))
+            // Different user actions
+            switch (key.Key)
             {
-                switch (key.Key)
-                {
-                    case ConsoleKey.W:
-                        Player.Move(CurrentMap, Constants.DIRECTION.NORTH);
-                        break;
-                    case ConsoleKey.A:
-                        Player.Move(CurrentMap, Constants.DIRECTION.WEST);
-                        break;
-                    case ConsoleKey.S:
-                        Player.Move(CurrentMap, Constants.DIRECTION.SOUTH);
-                        break;
-                    case ConsoleKey.D:
-                        Player.Move(CurrentMap, Constants.DIRECTION.EAST);
-                        break;
-                    case ConsoleKey.Spacebar:
-                        Player.Attack(CurrentMap, Enemies[CurrentMap.Name].Where(x => x.Alive).ToList());
-                        break;
-                    case ConsoleKey.Escape:
-                        DisplayMenu();
-                        ShouldEnemyMove = false;
-                        break;
-                }
+                case ConsoleKey.W:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
+                    break;
+                case ConsoleKey.A:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
+                    break;
+                case ConsoleKey.S:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
+                    break;
+                case ConsoleKey.D:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
+                    break;
+                case ConsoleKey.Spacebar:
+                    Player.Attack(CurrentLevel);
+                    break;
+                case ConsoleKey.Escape:
+                    DisplayMenu();
+                    break;
+                default:
+                    break;
             }
 
-            return ShouldEnemyMove;
-        }
-
-        public void RegisterEnemy(string name, Enemy enemy)
-        {
-            if(!Enemies.Keys.Contains(name))
+            if(newLevel != null)
             {
-                Enemies[name] = new List<Enemy>();
+                TransitionToLevel(newLevel);
             }
-
-            Enemies[name].Add(enemy);
         }
 
+        // Register a weapon to be used by the player
         public void RegisterWeapon(string name, Weapon weapon)
         {
             Weapons[name] = weapon;
         }
 
+        // Register a consumable item for the player
         public void RegisterItem(string name, UsableItem item)
         {
             UsableItems[name] = item;
         }
 
+        #region UIMethods
         public void DisplayGameOver()
         {
             Console.Clear();
@@ -137,11 +127,11 @@ namespace HackSlash
         public void DisplayMap()
         {
             Console.Clear();
-            for(int i = 0; i < CurrentMap.Board.GetLength(0); i++)
+            for(int i = 0; i < CurrentLevel.Map.GetLength(0); i++)
             {
-                for(int j = 0; j < CurrentMap.Board.GetLength(1); j++)
+                for(int j = 0; j < CurrentLevel.Map.GetLength(1); j++)
                 {
-                    Console.Write(CurrentMap.Board[i, j]);
+                    Console.Write(CurrentLevel.Map[i, j]);
                 }
 
                 Console.WriteLine();
@@ -234,10 +224,6 @@ namespace HackSlash
                                 index = Player.Inventory.Items.Count - 1;
                             }
                             break;
-                        case ConsoleKey.U:
-                            item.UseItem(Player);
-                            loop = false;
-                            break;
                         case ConsoleKey.Enter:
                             item.UseItem(Player);
                             loop = false;
@@ -292,10 +278,6 @@ namespace HackSlash
                                 index = Player.Inventory.Weapons.Count - 1;
                             }
                             break;
-                        case ConsoleKey.E:
-                            Player.Equip(weapon);
-                            loop = false;
-                            break;
                         case ConsoleKey.Enter:
                             Player.Equip(weapon);
                             loop = false;
@@ -316,13 +298,13 @@ namespace HackSlash
                 Console.ReadKey(true);
             }
         }
+        #endregion
 
         public Game()
         {
-            Enemies = new Dictionary<string, List<Enemy>>();
-            Maps = new Dictionary<string, Map>();
+            Levels = new Dictionary<string, Level>();
             Constants = new Constants();
-            Player = new Player(Constants.START_POINT.Item1, Constants.START_POINT.Item2);
+            Player = new Player();
             Weapons = new Dictionary<string, Weapon>();
             UsableItems = new Dictionary<string, UsableItem>();
             Running = true;
