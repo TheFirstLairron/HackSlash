@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    class HealingItem : UsableItem
+    class HealingItem : Item, UsableItem
     {
         public int Amount { get; set; }
         public string Description { get; set; }
@@ -30,6 +30,15 @@ namespace HackSlash
                     }
                 }
             }
+        }
+
+        public HealingItem(HealingItem item)
+        {
+            Amount = item.Amount;
+            Description = item.Description;
+            Kept = item.Kept;
+            Name = item.Name;
+            Use = item.Use;
         }
 
         public HealingItem(int amount, string desc, bool kept, string name, Action<Player> use)

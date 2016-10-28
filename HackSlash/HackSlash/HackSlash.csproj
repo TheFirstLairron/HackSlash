@@ -49,6 +49,9 @@
     <Compile Include="Game.cs" />
     <Compile Include="HealingItem.cs" />
     <Compile Include="Inventory.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemBox.cs" />
+    <Compile Include="KeyItem.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelTransition.cs" />
     <Compile Include="Player.cs" />

@@ -57,6 +57,12 @@ namespace HackSlash
             Weapon = weapon;
         }
 
+        // Remove a key item from the inventory
+        public void RemoveKeyItem(KeyItem item)
+        {
+            Inventory.RemoveKeyItem(item);
+        }
+
         // Get the players XY coordinates
         public Tuple<int, int> GetCoords()
         {
@@ -110,6 +116,18 @@ namespace HackSlash
             }
 
             return isNeighbor;
+        }
+
+        public void ConsumeItemBox(ItemBox box)
+        {
+            if(box.Reward is UsableItem)
+            {
+                Inventory.AddItem(box.Reward as UsableItem);
+            }
+            else if(box.Reward is KeyItem)
+            {
+                Inventory.AddKeyItem(box.Reward as KeyItem);
+            }
         }
 
         public Player(int health = 30)

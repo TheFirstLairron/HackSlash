@@ -24,6 +24,11 @@ namespace HackSlash
                 Player.Heal(5);
             });
 
+            HealingItem item3 = new HealingItem(1, "An Item that heals stuff", false, "Testing Item 2", (Player) =>
+            {
+                Player.Heal(5);
+            });
+
             #region Level1
             List<LevelTransition> levelOneExits = new List<LevelTransition>();
             levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
@@ -32,7 +37,10 @@ namespace HackSlash
             level1Enemies.Add(new Enemy(0, 10, 0, 9, 9));
             level1Enemies.Add(new Enemy(10, 10, 0, 8, 8));
 
-            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies);
+            List<ItemBox> items = new List<ItemBox>();
+            items.Add(new ItemBox(item3, 7, 1));
+
+            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies, items);
             #endregion
 
             #region level2

@@ -12,6 +12,7 @@ namespace HackSlash
         public Char[,] Map { get; private set; }
         public List<LevelTransition> Exits { get; set; }
         public List<Enemy> Enemies { get; set; }
+        public List<ItemBox> ItemBoxs { get; set; }
 
         // Move the player, and return a new level if applicable
         public LevelTransition MovePlayer(Player player, Constants.DIRECTION dir)
@@ -41,19 +42,29 @@ namespace HackSlash
                     break;
             }
 
-            if(Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EMPTY)
+            if (Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EMPTY)
             {
                 Map[xToCheck, yToCheck] = entity;
                 Map[playerLoc.Item1, playerLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
                 player.SetCoords(Tuple.Create(xToCheck, yToCheck));
                 MoveEnemies(player);
             }
-            else 
+            else if (Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EXIT)
             {
-                if(Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EXIT)
+                newLevel = Exits.Where(x => x.ExitLocation.Item1 == xToCheck && x.ExitLocation.Item2 == yToCheck).FirstOrDefault();
+                ResetCell(player.GetCoords());
+            }
+            else if(Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.ITEMBOX)
+            {
+                ItemBox item = ItemBoxs.Where(x => x.XCoord == xToCheck && x.YCoord == yToCheck).First();
+
+                if (item != null)
                 {
-                    newLevel = Exits.Where(x => x.ExitLocation.Item1 == xToCheck && x.ExitLocation.Item2 == yToCheck).FirstOrDefault();
-                    ResetCell(player.GetCoords());
+                    player.ConsumeItemBox(item);
+                    Map[playerLoc.Item1, playerLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
+                    Map[xToCheck, yToCheck] = (char)Constants.MAP_CHARS.CHARACTER;
+                    player.SetCoords(Tuple.Create(xToCheck, yToCheck));
+                    MoveEnemies(player);
                 }
             }
 
@@ -114,12 +125,21 @@ namespace HackSlash
             }
         }
 
-        // Place the exits at thier proper location
+        // Place the exits at their proper location
         public void PlaceExits()
         {
             foreach(LevelTransition tran in Exits)
             {
                 Map[tran.ExitLocation.Item1, tran.ExitLocation.Item2] = (char)Constants.MAP_CHARS.EXIT;
+            }
+        }
+
+        // Place item boxes in their locations
+        public void PlaceItemBoxes()
+        {
+            foreach(ItemBox item in ItemBoxs)
+            {
+                Map[item.XCoord, item.YCoord] = (char)Constants.MAP_CHARS.ITEMBOX;
             }
         }
 
@@ -157,20 +177,27 @@ namespace HackSlash
             return isNeighbor;
         }
 
-        public Level(string name, Char[,] map, List<LevelTransition> exits, List<Enemy> enemies = null)
+        public Level(string name, Char[,] map, List<LevelTransition> exits, List<Enemy> enemies = null, List<ItemBox> items = null)
         {
             Name = name;
             Map = map;
             Exits = exits;
             Enemies = enemies;
+            ItemBoxs = items;
 
             if(Enemies == null)
             {
                 Enemies = new List<Enemy>();
             }
 
+            if(ItemBoxs == null)
+            {
+                ItemBoxs = new List<ItemBox>();
+            }
+
             PlaceExits();
             PlaceEnemies();
+            PlaceItemBoxes();
         }
     }
 }

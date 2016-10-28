@@ -32,7 +32,8 @@ namespace HackSlash
             EMPTY = ' ',
             ENEMY = '*',
             CHARACTER = '@',
-            EXIT = '0'
+            EXIT = '0',
+            ITEMBOX = 'o'
         }
 
         // The main menu

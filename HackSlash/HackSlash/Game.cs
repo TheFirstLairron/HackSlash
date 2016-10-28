@@ -11,6 +11,7 @@ namespace HackSlash
         private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
+        private Dictionary<string, KeyItem> KeyItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
@@ -316,6 +317,7 @@ namespace HackSlash
             Player = new Player();
             Weapons = new Dictionary<string, Weapon>();
             UsableItems = new Dictionary<string, UsableItem>();
+            KeyItems = new Dictionary<string, KeyItem>();
             Running = true;
         }
     }
