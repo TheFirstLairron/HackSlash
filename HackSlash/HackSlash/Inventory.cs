@@ -15,7 +15,12 @@ namespace HackSlash
         // Add a weapon to the players inventory
         public void AddWeapon(Weapon weapon)
         {
-            Weapons.Add(weapon);
+            Weapon temp = Weapons.Where(x => x.Name == weapon.Name).FirstOrDefault();
+
+            if (temp == null)
+            {
+                Weapons.Add(weapon);
+            }
         }
 
         // Add a consumable item to the players inventory

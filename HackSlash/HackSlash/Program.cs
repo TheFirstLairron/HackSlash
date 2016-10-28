@@ -11,8 +11,15 @@ namespace HackSlash
         static void Main(string[] args)
         {
             Game game = new Game();
-            game.RegisterWeapon("TestingWeapon", new Weapon("TestingWeapon", "A Testing Weapon", 5));
-            game.RegisterWeapon("Mega", new Weapon("Mega", "The Mega Weapon", 500));
+
+            Weapon testing = new Weapon("TestingWeapon", "A Testing Weapon", 5);
+            game.RegisterWeapon(testing.Name, testing);
+
+            Weapon mega = new Weapon("Mega", "The Mega Weapon", 500);
+            game.RegisterWeapon(mega.Name, mega);
+
+            Weapon boxTest = new Weapon("Boxish", "The boxiest of all boxes", 15);
+            game.RegisterWeapon(boxTest.Name, boxTest);
 
             HealingItem item = new HealingItem(1, "An Item that heals 10 health", false, "Testing Item", (Player) =>
             {
@@ -34,13 +41,13 @@ namespace HackSlash
             levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
 
             List<Enemy> level1Enemies = new List<Enemy>();
-            level1Enemies.Add(new Enemy(0, 10, 0, 9, 9));
+            Enemy firstEnemy = new Enemy(10, 10, 0, 8, 7);
+            firstEnemy.Reward = new ItemBox(boxTest);
+
+            level1Enemies.Add(firstEnemy);
             level1Enemies.Add(new Enemy(10, 10, 0, 8, 8));
 
-            List<ItemBox> items = new List<ItemBox>();
-            items.Add(new ItemBox(item3, 7, 1));
-
-            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies, items);
+            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies);
             #endregion
 
             #region level2

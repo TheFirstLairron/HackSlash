@@ -8,17 +8,6 @@ namespace HackSlash
 {
     public class Constants
     {
-        // A list of the allowed keys for user input
-        public static readonly List<ConsoleKey> allowedKeys = new List<ConsoleKey>() 
-        {
-            ConsoleKey.A,
-            ConsoleKey.W,
-            ConsoleKey.S,
-            ConsoleKey.D,
-            ConsoleKey.Escape,
-            ConsoleKey.Spacebar
-        };
-
         public enum DIRECTION
         {
             NORTH = 0,
@@ -36,6 +25,17 @@ namespace HackSlash
             ITEMBOX = 'o'
         }
 
+        // A list of the allowed keys for user input
+        public static readonly List<ConsoleKey> allowedKeys = new List<ConsoleKey>()
+        {
+            ConsoleKey.A,
+            ConsoleKey.W,
+            ConsoleKey.S,
+            ConsoleKey.D,
+            ConsoleKey.Escape,
+            ConsoleKey.Spacebar
+        };
+
         // The main menu
         public static readonly List<string> mainMenuOptions = new List<string>()
         {
@@ -43,6 +43,7 @@ namespace HackSlash
             "   -Resume",
             "   -Inventory",
             "   -Equipment",
+            "   -Key Items",
             "   -Quit"
         };
     

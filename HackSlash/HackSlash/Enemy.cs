@@ -14,6 +14,7 @@ namespace HackSlash
         private int XCoord { get; set; }
         private int YCoord { get; set; }
         public bool Alive { get; set; }
+        public ItemBox Reward { get; set; }
 
         // Deal damage to the enemy
         public void TakeDamage(int amount, Level level)
@@ -42,7 +43,19 @@ namespace HackSlash
         // Remove the enemy from the level
         public void Kill(Level level)
         {
-            level.ResetCell(GetCoords());
+            if(Reward != null)
+            {
+                // Place the reward and register it with the level
+                Reward.XCoord = XCoord;
+                Reward.YCoord = YCoord;
+                level.ItemBoxs.Add(Reward);
+                level.Map[XCoord, YCoord] = (char)Constants.MAP_CHARS.ITEMBOX;
+            }
+            else
+            {
+                // Clear out the cell, there is no reward to drop
+                level.ResetCell(GetCoords());
+            }
             Alive = false;
         }
 
@@ -66,6 +79,8 @@ namespace HackSlash
             Defense = defense;
             XCoord = x;
             YCoord = y;
+            Reward = null;
+
             if (Health > 1)
             {
                 Alive = true;

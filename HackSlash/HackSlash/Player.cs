@@ -84,6 +84,14 @@ namespace HackSlash
                 if (isEnemyNeighbor(enemy))
                 {
                     enemy.TakeDamage(GetDamage(), level);
+
+                    if (!enemy.Alive)
+                    {
+                        if (enemy.Reward != null)
+                        {
+                            ConsumeItemBox(enemy.Reward);
+                        }
+                    }
                 }
             }
 
@@ -118,6 +126,7 @@ namespace HackSlash
             return isNeighbor;
         }
 
+        // Process the contents of an item box
         public void ConsumeItemBox(ItemBox box)
         {
             if(box.Reward is UsableItem)
@@ -127,6 +136,10 @@ namespace HackSlash
             else if(box.Reward is KeyItem)
             {
                 Inventory.AddKeyItem(box.Reward as KeyItem);
+            }
+            else if(box.Reward is Weapon)
+            {
+                Inventory.AddWeapon(box.Reward as Weapon);
             }
         }
 

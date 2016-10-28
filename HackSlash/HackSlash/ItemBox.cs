@@ -12,11 +12,6 @@ namespace HackSlash
         public int XCoord { get; set; }
         public int YCoord { get; set; }
 
-        public Tuple<int, int> GetCoords()
-        {
-            return Tuple.Create(XCoord, YCoord);
-        }
-
         public ItemBox(Item reward, int x = 0, int y = 0)
         {
             Reward = reward;

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    public class Weapon
+    public class Weapon : Item
     {
-        public string Name { get; private set; }
-        public string Description { get; private set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public int Strength { get; private set; }
         public bool Equipped { get; private set; }
 
