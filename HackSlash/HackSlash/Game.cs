@@ -158,6 +158,8 @@ namespace HackSlash
         {
             DisplayMap();
             DisplayStats();
+
+            // Display any message that exists to the player
             if(Game.CurrentMessage != "")
             {
                 Console.WriteLine(Game.CurrentMessage);
