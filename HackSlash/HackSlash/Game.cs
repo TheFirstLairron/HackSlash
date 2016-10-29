@@ -16,6 +16,7 @@ namespace HackSlash
         private bool Running { get; set; }
         private Constants Constants { get; set; }
         private Level CurrentLevel { get; set; }
+        public static string CurrentMessage { get; set; }
 
         // This method will initiate play and manage the game logic
         public void Play()
@@ -157,6 +158,11 @@ namespace HackSlash
         {
             DisplayMap();
             DisplayStats();
+            if(Game.CurrentMessage != "")
+            {
+                Console.WriteLine(Game.CurrentMessage);
+                Game.CurrentMessage = "";
+            }
         }
 
         public void DisplayMenu()

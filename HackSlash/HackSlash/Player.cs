@@ -84,14 +84,6 @@ namespace HackSlash
                 if (isEnemyNeighbor(enemy))
                 {
                     enemy.TakeDamage(GetDamage(), level);
-
-                    if (!enemy.Alive)
-                    {
-                        if (enemy.Reward != null)
-                        {
-                            ConsumeItemBox(enemy.Reward);
-                        }
-                    }
                 }
             }
 
@@ -132,14 +124,17 @@ namespace HackSlash
             if(box.Reward is UsableItem)
             {
                 Inventory.AddItem(box.Reward as UsableItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
             }
             else if(box.Reward is KeyItem)
             {
                 Inventory.AddKeyItem(box.Reward as KeyItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
             }
             else if(box.Reward is Weapon)
             {
                 Inventory.AddWeapon(box.Reward as Weapon);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
             }
         }
 
