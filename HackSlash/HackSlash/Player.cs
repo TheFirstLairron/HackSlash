@@ -57,6 +57,12 @@ namespace HackSlash
             Weapon = weapon;
         }
 
+        // Remove a key item from the inventory
+        public void RemoveKeyItem(KeyItem item)
+        {
+            Inventory.RemoveKeyItem(item);
+        }
+
         // Get the players XY coordinates
         public Tuple<int, int> GetCoords()
         {
@@ -110,6 +116,26 @@ namespace HackSlash
             }
 
             return isNeighbor;
+        }
+
+        // Process the contents of an item box
+        public void ConsumeItemBox(ItemBox box)
+        {
+            if(box.Reward is UsableItem)
+            {
+                Inventory.AddItem(box.Reward as UsableItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
+            else if(box.Reward is KeyItem)
+            {
+                Inventory.AddKeyItem(box.Reward as KeyItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
+            else if(box.Reward is Weapon)
+            {
+                Inventory.AddWeapon(box.Reward as Weapon);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
         }
 
         public Player(int health = 30)

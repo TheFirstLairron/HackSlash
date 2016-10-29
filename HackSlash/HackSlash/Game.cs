@@ -11,10 +11,12 @@ namespace HackSlash
         private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
+        private Dictionary<string, KeyItem> KeyItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
         private Level CurrentLevel { get; set; }
+        public static string CurrentMessage { get; set; }
 
         // This method will initiate play and manage the game logic
         public void Play()
@@ -156,6 +158,13 @@ namespace HackSlash
         {
             DisplayMap();
             DisplayStats();
+
+            // Display any message that exists to the player
+            if(Game.CurrentMessage != "")
+            {
+                Console.WriteLine(Game.CurrentMessage);
+                Game.CurrentMessage = "";
+            }
         }
 
         public void DisplayMenu()
@@ -182,6 +191,9 @@ namespace HackSlash
                     case ConsoleKey.E:
                         DisplayEquipment();
                         break;
+                    case ConsoleKey.K:
+                        DisplayKeyItems();
+                        break;
                     case ConsoleKey.Q:
                         loop = false;
                         this.Running = false;
@@ -193,6 +205,7 @@ namespace HackSlash
         public void DisplayItems()
         {
             Console.Clear();
+
             if(Player.Inventory.Items.Count > 0)
             {
                 Player.Inventory.VerifyItemCounts();
@@ -204,9 +217,10 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("Item: " + item.Name);
-                    Console.WriteLine("Description: " + item.Description);
-                    Console.WriteLine("Amount: " + item.Amount);
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Items.Count}");
+                    Console.WriteLine($"Item: {item.Name}");
+                    Console.WriteLine($"Description: {item.Description}");
+                    Console.WriteLine($"Amount: {item.Amount}");
 
                     switch (Console.ReadKey(true).Key)
                     {
@@ -235,7 +249,10 @@ namespace HackSlash
                             break;
                     }
 
-                    item = Player.Inventory.Items.ElementAt(index);
+                    if (loop)
+                    {
+                        item = Player.Inventory.Items.ElementAt(index);
+                    }
 
                 } while (loop);
             }
@@ -249,6 +266,7 @@ namespace HackSlash
         public void DisplayEquipment()
         {
             Console.Clear();
+
             if (Player.Inventory.Weapons.Count > 0)
             {
                 int index = 0;
@@ -258,9 +276,10 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("Weapon: " + weapon.Name);
-                    Console.WriteLine("Description: " + weapon.Description);
-                    Console.WriteLine("Power: " + weapon.Strength);
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Weapons.Count}");
+                    Console.WriteLine($"Weapon: {weapon.Name}");
+                    Console.WriteLine($"Description: {weapon.Description}");
+                    Console.WriteLine($"Power: {weapon.Strength}");
 
                     switch (Console.ReadKey(true).Key)
                     {
@@ -289,7 +308,11 @@ namespace HackSlash
                             break;
                     }
 
-                    weapon = Player.Inventory.Weapons.ElementAt(index);
+                    if (loop)
+                    {
+                        weapon = Player.Inventory.Weapons.ElementAt(index);
+                    }
+
                 } while (loop);
             }
             else
@@ -297,6 +320,64 @@ namespace HackSlash
                 Console.WriteLine("You don't have any weapons in your bag...");
                 Console.ReadKey(true);
             }
+        }
+
+        public void DisplayKeyItems()
+        {
+            Console.Clear();
+
+            if(Player.Inventory.KeyItems.Count > 0)
+            {
+                int index = 0;
+                KeyItem item = Player.Inventory.KeyItems.ElementAt(index);
+                bool loop = true;
+
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.KeyItems.Count}");
+                    Console.WriteLine($"Item: {item.Name}");
+                    Console.WriteLine($"Description: {item.Description}");
+
+                    switch(Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.N:
+                            index++;
+                            if (index >= Player.Inventory.KeyItems.Count)
+                            {
+                                index = 0;
+                            }
+                            break;
+                        case ConsoleKey.P:
+                            index--;
+                            if (index < 0)
+                            {
+                                index = Player.Inventory.KeyItems.Count - 1;
+                            }
+                            break;
+                        case ConsoleKey.Enter:
+                            loop = false;
+                            break;
+                        case ConsoleKey.Q:
+                            loop = false;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if(loop)
+                    {
+                        item = Player.Inventory.KeyItems.ElementAt(index);
+                    }
+
+                } while (loop);
+            }
+            else
+            {
+                Console.WriteLine("You don't have any weapons in your bag...");
+                Console.ReadKey(true);
+            }
+
         }
         #endregion
 
@@ -307,6 +388,7 @@ namespace HackSlash
             Player = new Player();
             Weapons = new Dictionary<string, Weapon>();
             UsableItems = new Dictionary<string, UsableItem>();
+            KeyItems = new Dictionary<string, KeyItem>();
             Running = true;
         }
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    class HealingItem : UsableItem
+    class HealingItem : Item, UsableItem
     {
         public int Amount { get; set; }
         public string Description { get; set; }
