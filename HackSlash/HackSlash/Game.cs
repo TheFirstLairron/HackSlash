@@ -374,7 +374,7 @@ namespace HackSlash
             }
             else
             {
-                Console.WriteLine("You don't have any weapons in your bag...");
+                Console.WriteLine("You don't have any key items in your bag...");
                 Console.ReadKey(true);
             }
 

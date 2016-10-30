@@ -36,18 +36,43 @@ namespace HackSlash
                 Player.Heal(5);
             });
 
+            KeyItem kItem = new KeyItem("Testing Key", "A testing key item");
+
+            KeyItem OpenTrappedEnemy = new KeyItem("Cage Key", "A key for the cage");
+
             #region Level1
             List<LevelTransition> levelOneExits = new List<LevelTransition>();
-            levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
+            levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1), false));
 
             List<Enemy> level1Enemies = new List<Enemy>();
             Enemy firstEnemy = new Enemy(10, 10, 0, 8, 7);
-            firstEnemy.Reward = new ItemBox(boxTest);
+            firstEnemy.Reward = new ItemBox(kItem);
 
             level1Enemies.Add(firstEnemy);
             level1Enemies.Add(new Enemy(10, 10, 0, 8, 8));
 
-            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, level1Enemies);
+            List<LevelModifier> level1Mods = new List<LevelModifier>();
+
+            LevelModifier level1Mod = new LevelModifier("Check for key items", false, (mod, player, level) =>
+            {
+                if(player.Inventory.CheckIfKeyItemExists(kItem.Name))
+                { 
+                    LevelTransition exit = level.Exits.Where(x => x.LevelFrom == "First Level").FirstOrDefault();
+
+                    if (exit != null)
+                    {
+                        exit.ShouldDisplay = true;
+                        level.PlaceExits();
+                        player.Inventory.RemoveKeyItem(kItem);
+                        mod.Activated = true;
+                    }
+                }
+            });
+
+            level1Mods.Add(level1Mod);
+
+            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, 
+                enemies: level1Enemies, mods: level1Mods);
             #endregion
 
             #region level2
@@ -57,7 +82,21 @@ namespace HackSlash
             List<Enemy> level2Enemies = new List<Enemy>();
             level2Enemies.Add(new Enemy(10, 5, 0, 9, 1));
 
-            Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits, level2Enemies);
+            List<ItemBox> level2Items = new List<ItemBox>();
+            level2Items.Add(new ItemBox(OpenTrappedEnemy, 9, 9));
+
+            List<LevelModifier> level2Mods = new List<LevelModifier>();
+            LevelModifier level2Mod = new LevelModifier("OpenCageDoor", false, (mod, player, level) =>
+            {
+                if(player.Inventory.CheckIfKeyItemExists(OpenTrappedEnemy.Name))
+                {
+                    level.ResetCell(Tuple.Create(7, 3));
+                    mod.Activated = true;
+                }
+            });
+
+            Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits,
+                enemies: level2Enemies, items: level2Items, mods: level2Mods);
             #endregion
 
             game.RegisterItem(item.Name, item);

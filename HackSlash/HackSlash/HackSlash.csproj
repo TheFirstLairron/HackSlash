@@ -53,6 +53,7 @@
     <Compile Include="ItemBox.cs" />
     <Compile Include="KeyItem.cs" />
     <Compile Include="Level.cs" />
+    <Compile Include="LevelModifier.cs" />
     <Compile Include="LevelTransition.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
