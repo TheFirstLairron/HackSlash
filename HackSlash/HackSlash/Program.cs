@@ -63,7 +63,6 @@ namespace HackSlash
                     {
                         exit.ShouldDisplay = true;
                         level.PlaceExits();
-                        player.Inventory.RemoveKeyItem(kItem);
                         mod.Activated = true;
                     }
                 }
@@ -94,6 +93,8 @@ namespace HackSlash
                     mod.Activated = true;
                 }
             });
+
+            level2Mods.Add(level2Mod);
 
             Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits,
                 enemies: level2Enemies, items: level2Items, mods: level2Mods);
