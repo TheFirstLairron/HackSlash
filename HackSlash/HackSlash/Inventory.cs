@@ -50,6 +50,22 @@ namespace HackSlash
             KeyItems.Remove(item);
         }
 
+        // Check if a key item with a specific name in your inventory
+        public bool CheckIfKeyItemExists(string name)
+        {
+            bool exists = false;
+            if (KeyItems.Count > 0)
+            {
+                KeyItem item = KeyItems.Where(x => x.Name == name).FirstOrDefault();
+
+                if (item != null)
+                {
+                    exists = true;
+                }
+            }
+            return exists;
+        }
+
         // Check that all items have a valid amount(more than 0) and remove them if they dont
         public void VerifyItemCounts()
         {

@@ -13,6 +13,7 @@ namespace HackSlash
         public List<LevelTransition> Exits { get; set; }
         public List<Enemy> Enemies { get; set; }
         public List<ItemBox> ItemBoxs { get; set; }
+        public List<LevelModifier> Modifiers { get; set; }
 
         // Move the player, and return a new level if applicable
         public LevelTransition MovePlayer(Player player, Constants.DIRECTION dir)
@@ -48,6 +49,7 @@ namespace HackSlash
                 Map[playerLoc.Item1, playerLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
                 player.SetCoords(Tuple.Create(xToCheck, yToCheck));
                 MoveEnemies(player);
+                RunModifiers(player);
             }
             else if (Map[xToCheck, yToCheck] == (char)Constants.MAP_CHARS.EXIT)
             {
@@ -65,6 +67,7 @@ namespace HackSlash
                     Map[xToCheck, yToCheck] = (char)Constants.MAP_CHARS.CHARACTER;
                     player.SetCoords(Tuple.Create(xToCheck, yToCheck));
                     MoveEnemies(player);
+                    RunModifiers(player);
                 }
             }
 
@@ -130,7 +133,10 @@ namespace HackSlash
         {
             foreach(LevelTransition tran in Exits)
             {
-                Map[tran.ExitLocation.Item1, tran.ExitLocation.Item2] = (char)Constants.MAP_CHARS.EXIT;
+                if (tran.ShouldDisplay)
+                {
+                    Map[tran.ExitLocation.Item1, tran.ExitLocation.Item2] = (char)Constants.MAP_CHARS.EXIT;
+                }
             }
         }
 
@@ -177,13 +183,27 @@ namespace HackSlash
             return isNeighbor;
         }
 
-        public Level(string name, Char[,] map, List<LevelTransition> exits, List<Enemy> enemies = null, List<ItemBox> items = null)
+        // Run all the inactive modifiers for the level
+        public void RunModifiers(Player player)
+        {
+            foreach(LevelModifier mod in Modifiers)
+            {
+                if(!mod.Activated)
+                {
+                    mod?.Modifier(mod, player, this);
+                }
+            }
+        }
+
+        public Level(string name, Char[,] map, List<LevelTransition> exits, 
+            List<Enemy> enemies = null, List<ItemBox> items = null, List<LevelModifier> mods = null)
         {
             Name = name;
             Map = map;
             Exits = exits;
             Enemies = enemies;
             ItemBoxs = items;
+            Modifiers = mods;
 
             if(Enemies == null)
             {
@@ -193,6 +213,11 @@ namespace HackSlash
             if(ItemBoxs == null)
             {
                 ItemBoxs = new List<ItemBox>();
+            }
+
+            if(Modifiers == null)
+            {
+                Modifiers = new List<LevelModifier>();
             }
 
             PlaceExits();
