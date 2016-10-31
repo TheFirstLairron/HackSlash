@@ -12,52 +12,54 @@ namespace HackSlash
         {
             Game game = new Game();
 
-            Weapon testing = new Weapon("TestingWeapon", "A Testing Weapon", 5);
-            game.RegisterWeapon(testing.Name, testing);
+            Weapon rustyScythe = new Weapon(Constants.RustyScytheName, Constants.RustyScytheDesc, Constants.RustyScytheDamage);
+            game.RegisterWeapon(rustyScythe.Name, rustyScythe);
 
-            Weapon mega = new Weapon("Mega", "The Mega Weapon", 500);
+            Weapon mega = new Weapon(Constants.MegaScytheName, Constants.MegaScytheDesc, Constants.MegaScytheDamage);
             game.RegisterWeapon(mega.Name, mega);
 
-            Weapon boxTest = new Weapon("Boxish", "The boxiest of all boxes", 15);
+            Weapon boxTest = new Weapon(Constants.BoxScytheName, Constants.BoxScytheDesc, Constants.BoxScytheDamage);
             game.RegisterWeapon(boxTest.Name, boxTest);
 
-            HealingItem item = new HealingItem(1, "An Item that heals 10 health", false, "Testing Item", (Player) =>
+            HealingItem basicPotion = new HealingItem(1, Constants.BasicPotionDesc, false, Constants.BasicPotionName, (Player) =>
             {
-                Player.Heal(10);
+                Player.Heal(Constants.BasicPotionHeal);
             });
+            game.RegisterItem(basicPotion.Name, basicPotion);
 
-            HealingItem item2 = new HealingItem(1, "An Item that heals 5 health", false, "Testing Item 2", (Player) =>
+            HealingItem weakenedPotion = new HealingItem(6, Constants.WeakenedPotionDesc, false, Constants.WeakenedPotionName, (Player) =>
             {
-                Player.Heal(5);
+                Player.Heal(Constants.WeakenedPotionHeal);
             });
+            game.RegisterItem(weakenedPotion.Name, weakenedPotion);
 
-            HealingItem item3 = new HealingItem(1, "An Item that heals stuff", false, "Testing Item 2", (Player) =>
+            HealingItem superPotion = new HealingItem(1, Constants.SuperPotionDesc, false, Constants.SuperPotionName, (Player) =>
             {
-                Player.Heal(5);
+                Player.Heal(Constants.SuperPotionHeal);
             });
+            game.RegisterItem(superPotion.Name, superPotion);
 
-            KeyItem kItem = new KeyItem("Testing Key", "A testing key item");
+            KeyItem EntrywayDoorKey = new KeyItem(Constants.EntrywayKeyName, Constants.EntrywayKeyDesc);
+            game.RegisterKeyItem(EntrywayDoorKey.Name, EntrywayDoorKey);
 
-            KeyItem OpenTrappedEnemy = new KeyItem("Cage Key", "A key for the cage");
+            KeyItem JaildoorKey = new KeyItem(Constants.JaildoorKeyName, Constants.JaildoorKeyDesc);
+            game.RegisterKeyItem(JaildoorKey.Name, JaildoorKey);
 
             #region Level1
             List<LevelTransition> levelOneExits = new List<LevelTransition>();
-            levelOneExits.Add(new LevelTransition("First Level", "Second Level", Tuple.Create(0, 9), Tuple.Create(5, 1), false));
+            levelOneExits.Add(new LevelTransition(Constants.Level1Name, Constants.Level2Name, Tuple.Create(0, 5), Tuple.Create(1, 5), false));
 
             List<Enemy> level1Enemies = new List<Enemy>();
-            Enemy firstEnemy = new Enemy(10, 10, 0, 8, 7);
-            firstEnemy.Reward = new ItemBox(kItem);
-
-            level1Enemies.Add(firstEnemy);
-            level1Enemies.Add(new Enemy(10, 10, 0, 8, 8));
+            level1Enemies.Add(new Enemy(10, 10, 0, 1, 1));
+            level1Enemies.Add(new Enemy(10, 10, 0, 1, 9));
 
             List<LevelModifier> level1Mods = new List<LevelModifier>();
 
-            LevelModifier level1Mod = new LevelModifier("Check for key items", false, (mod, player, level) =>
+            LevelModifier level1Mod = new LevelModifier("Clear All Enemies", false, (mod, player, level) =>
             {
-                if(player.Inventory.CheckIfKeyItemExists(kItem.Name))
+                if(level.Enemies.Where(x => x.Alive).ToList().Count <= 0)
                 { 
-                    LevelTransition exit = level.Exits.Where(x => x.LevelFrom == "First Level").FirstOrDefault();
+                    LevelTransition exit = level.Exits.Where(x => x.LevelFrom == Constants.Level1Name).FirstOrDefault();
 
                     if (exit != null)
                     {
@@ -70,24 +72,28 @@ namespace HackSlash
 
             level1Mods.Add(level1Mod);
 
-            Level level1 = new Level("First Level", (char[,])Constants.firstMap.Clone(), levelOneExits, 
+            Level level1 = new Level(Constants.Level1Name, (char[,])Constants.firstMap.Clone(), levelOneExits, 
                 enemies: level1Enemies, mods: level1Mods);
+
+            game.AddLevel(level1.Name, level1);
+
             #endregion
 
             #region level2
-            List<LevelTransition> levelTwoExits = new List<LevelTransition>();
-            levelTwoExits.Add(new LevelTransition("Second Level", "First Level", Tuple.Create(0, 9), Tuple.Create(5, 1)));
+            List<LevelTransition> level2Exits = new List<LevelTransition>();
+            level2Exits.Add(new LevelTransition(Constants.Level2Name, Constants.Level1Name, Tuple.Create(0, 5), Tuple.Create(1, 5)));
+            level2Exits.Add(new LevelTransition(Constants.Level2Name, Constants.Level3Name, Tuple.Create(10, 1), Tuple.Create(1, 5)));
 
             List<Enemy> level2Enemies = new List<Enemy>();
             level2Enemies.Add(new Enemy(10, 5, 0, 9, 1));
 
             List<ItemBox> level2Items = new List<ItemBox>();
-            level2Items.Add(new ItemBox(OpenTrappedEnemy, 9, 9));
+            level2Items.Add(new ItemBox(JaildoorKey, 1, 9));
 
             List<LevelModifier> level2Mods = new List<LevelModifier>();
             LevelModifier level2Mod = new LevelModifier("OpenCageDoor", false, (mod, player, level) =>
             {
-                if(player.Inventory.CheckIfKeyItemExists(OpenTrappedEnemy.Name))
+                if(player.Inventory.CheckIfKeyItemExists(Constants.JaildoorKeyName))
                 {
                     level.ResetCell(Tuple.Create(7, 3));
                     mod.Activated = true;
@@ -96,17 +102,46 @@ namespace HackSlash
 
             level2Mods.Add(level2Mod);
 
-            Level level2 = new Level("Second Level", (char[,])Constants.secondMap.Clone(), levelTwoExits,
+            Level level2 = new Level(Constants.Level2Name, (char[,])Constants.secondMap.Clone(), level2Exits,
                 enemies: level2Enemies, items: level2Items, mods: level2Mods);
-            #endregion
 
-            game.RegisterItem(item.Name, item);
-            game.RegisterItem(item2.Name, item2);
-
-            game.AddLevel(level1.Name, level1);
             game.AddLevel(level2.Name, level2);
 
-            game.TransitionToLevel(new LevelTransition("none", "First Level", null, Tuple.Create(5, 1)));
+            #endregion
+
+            #region level3
+            List<LevelTransition> level3Exits = new List<LevelTransition>();
+            level3Exits.Add(new LevelTransition(Constants.Level3Name, Constants.Level2Name, Tuple.Create(0, 5), Tuple.Create(1, 9)));
+            level3Exits.Add(new LevelTransition(Constants.Level3Name, Constants.Level4Name, Tuple.Create(10, 5), Tuple.Create(1, 5)));
+
+            List<Enemy> level3Enemies = new List<Enemy>();
+            Enemy level3Enemy1 = new Enemy(10, 5, 5, 7, 3);
+            level3Enemy1.Reward = new ItemBox(weakenedPotion);
+            level3Enemies.Add(level3Enemy1);
+
+            Enemy level3Enemy2 = new Enemy(10, 5, 5, 7, 7);
+            level3Enemy2.Reward = new ItemBox(boxTest);
+            level3Enemies.Add(level3Enemy2);
+
+            Level level3 = new Level(Constants.Level3Name, (char[,])Constants.thirdMap.Clone(), level3Exits, level3Enemies);
+            game.AddLevel(level3.Name, level3);
+            #endregion
+
+            #region level4
+            List<LevelTransition> level4Exits = new List<LevelTransition>();
+            level4Exits.Add(new LevelTransition(Constants.Level4Name, Constants.Level3Name, Tuple.Create(0, 5), Tuple.Create(9, 5)));
+
+            List<Enemy> level4Enemies = new List<Enemy>();
+            Enemy Boss = new Enemy(40, 15, 10, 9, 5);
+            Boss.Reward = new ItemBox(mega);
+            level4Enemies.Add(Boss);
+
+            Level level4 = new Level(Constants.Level4Name, (char[,])Constants.fourthMap, level4Exits, level4Enemies);
+            game.AddLevel(level4.Name, level4);
+            #endregion
+
+
+            game.TransitionToLevel(new LevelTransition("none", Constants.Level1Name, null, Tuple.Create(9, 5)));
 
             game.Play();
         }
