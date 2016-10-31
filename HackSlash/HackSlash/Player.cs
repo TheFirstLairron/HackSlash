@@ -81,9 +81,12 @@ namespace HackSlash
         {
             foreach(Enemy enemy in level.Enemies)
             {
-                if (isEnemyNeighbor(enemy))
+                if (enemy.Alive)
                 {
-                    enemy.TakeDamage(GetDamage(), level);
+                    if (isEnemyNeighbor(enemy))
+                    {
+                        enemy.TakeDamage(GetDamage(), level);
+                    }
                 }
             }
 

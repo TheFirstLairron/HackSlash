@@ -22,10 +22,8 @@ namespace HackSlash
         public void Play()
         {
             // Adding weapons and usable items for testing
-            Player.Inventory.AddWeapon(Weapons["TestingWeapon"]);
-            Player.Inventory.AddWeapon(Weapons["Mega"]);
-            Player.Inventory.AddItem(UsableItems["Testing Item"]);
-            Player.Inventory.AddItem(UsableItems["Testing Item 2"]);
+            Player.Inventory.AddWeapon(Weapons[Constants.RustyScytheName]);
+            Player.Inventory.AddItem(UsableItems[Constants.BasicPotionName]);
 
             // Main game loop
             do
@@ -116,6 +114,12 @@ namespace HackSlash
         public void RegisterItem(string name, UsableItem item)
         {
             UsableItems[name] = item;
+        }
+
+        // Register a key item with the game
+        public void RegisterKeyItem(string name, KeyItem item)
+        {
+            KeyItems[name] = item;
         }
 
         #region UIMethods

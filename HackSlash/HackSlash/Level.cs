@@ -63,6 +63,7 @@ namespace HackSlash
                 if (item != null)
                 {
                     player.ConsumeItemBox(item);
+                    ItemBoxs.Remove(item);
                     Map[playerLoc.Item1, playerLoc.Item2] = (char)Constants.MAP_CHARS.EMPTY;
                     Map[xToCheck, yToCheck] = (char)Constants.MAP_CHARS.CHARACTER;
                     player.SetCoords(Tuple.Create(xToCheck, yToCheck));
