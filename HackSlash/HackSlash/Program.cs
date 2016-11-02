@@ -111,7 +111,7 @@ namespace HackSlash
 
             #region level3
             List<LevelTransition> level3Exits = new List<LevelTransition>();
-            level3Exits.Add(new LevelTransition(Constants.Level3Name, Constants.Level2Name, Tuple.Create(0, 5), Tuple.Create(1, 9)));
+            level3Exits.Add(new LevelTransition(Constants.Level3Name, Constants.Level2Name, Tuple.Create(0, 5), Tuple.Create(9, 1)));
             level3Exits.Add(new LevelTransition(Constants.Level3Name, Constants.Level4Name, Tuple.Create(10, 5), Tuple.Create(1, 5)));
 
             List<Enemy> level3Enemies = new List<Enemy>();
