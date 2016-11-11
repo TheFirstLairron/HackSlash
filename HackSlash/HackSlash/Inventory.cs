@@ -9,19 +9,64 @@ namespace HackSlash
     public class Inventory
     {
         public List<Weapon> Weapons { get; private set; }
-
         public List<UsableItem> Items { get; private set; }
+        public List<KeyItem> KeyItems { get; private set; }
 
+        // Add a weapon to the players inventory
         public void AddWeapon(Weapon weapon)
         {
-            Weapons.Add(weapon);
+            Weapon temp = Weapons.Where(x => x.Name == weapon.Name).FirstOrDefault();
+
+            if (temp == null)
+            {
+                Weapons.Add(weapon);
+            }
         }
 
+        // Add a consumable item to the players inventory
         public void AddItem(UsableItem item)
         {
-            Items.Add(item);
+            UsableItem temp = Items.Where(x => x.Name == item.Name).FirstOrDefault();
+
+            if(temp != null)
+            {
+                temp.Amount += item.Amount;
+            }
+            else
+            {
+                Items.Add(item);
+            }
         }
 
+        // Add a key item to the players inventory
+        public void AddKeyItem(KeyItem item)
+        {
+            KeyItems.Add(item);
+        }
+
+        // Remove a key item from the player
+        public void RemoveKeyItem(KeyItem item)
+        {
+            KeyItems.Remove(item);
+        }
+
+        // Check if a key item with a specific name in your inventory
+        public bool CheckIfKeyItemExists(string name)
+        {
+            bool exists = false;
+            if (KeyItems.Count > 0)
+            {
+                KeyItem item = KeyItems.Where(x => x.Name == name).FirstOrDefault();
+
+                if (item != null)
+                {
+                    exists = true;
+                }
+            }
+            return exists;
+        }
+
+        // Check that all items have a valid amount(more than 0) and remove them if they dont
         public void VerifyItemCounts()
         {
             foreach(var item in Items)
@@ -33,6 +78,7 @@ namespace HackSlash
             }
         }
 
+        // Remove an item from the players inventory
         public void RemoveItem(string name)
         {
             UsableItem item = Items.Where(x => x.Name == name).First();
@@ -46,6 +92,7 @@ namespace HackSlash
         {
             Weapons = new List<Weapon>();
             Items = new List<UsableItem>();
+            KeyItems = new List<KeyItem>();
         }
     }
 }

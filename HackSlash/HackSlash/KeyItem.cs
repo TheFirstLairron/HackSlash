@@ -6,19 +6,15 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    public class Weapon : Item
+    public class KeyItem : Item
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public int Strength { get; private set; }
-        public bool Equipped { get; private set; }
 
-        public Weapon(string name, string desc, int strength)
+        public KeyItem(string name, string desc)
         {
             Name = name;
             Description = desc;
-            Strength = strength;
-            Equipped = true;
         }
     }
 }

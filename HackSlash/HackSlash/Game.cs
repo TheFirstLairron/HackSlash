@@ -8,36 +8,28 @@ namespace HackSlash
 {
     public class Game
     {
-        private Dictionary<string, List<Enemy>> Enemies { get; set; }
-        private Dictionary<string, Map> Maps { get; set; }
+        private Dictionary<string, Level> Levels { get; set; }
         private Dictionary<string, Weapon> Weapons { get; set; }
         private Dictionary<string, UsableItem> UsableItems { get; set; }
+        private Dictionary<string, KeyItem> KeyItems { get; set; }
         private Player Player { get; set; }
         private bool Running { get; set; }
         private Constants Constants { get; set; }
-        private Map CurrentMap { get; set; }
+        private Level CurrentLevel { get; set; }
+        public static string CurrentMessage { get; set; }
 
+        // This method will initiate play and manage the game logic
         public void Play()
         {
-            Player.Inventory.AddWeapon(Weapons["TestingWeapon"]);
-            Player.Inventory.AddWeapon(Weapons["Mega"]);
-            Player.Inventory.AddItem(UsableItems["Testing Item"]);
-            Player.Inventory.AddItem(UsableItems["Testing Item 2"]);
+            // Adding weapons and usable items for testing
+            Player.Inventory.AddWeapon(Weapons[Constants.RustyScytheName]);
+            Player.Inventory.AddItem(UsableItems[Constants.BasicPotionName]);
 
+            // Main game loop
             do
             {
                 DisplayUI();
-                if (HandleInput(GetUserInput()))
-                {
-
-                    foreach (Enemy enemy in Enemies[CurrentMap.Name])
-                    {
-                        if (enemy.Alive)
-                        {
-                            enemy.Move(CurrentMap, Player, Enemies[CurrentMap.Name]);
-                        }
-                    }
-                }
+                HandleInput(GetUserInput());
 
                 if (!Player.Alive())
                 {
@@ -49,84 +41,88 @@ namespace HackSlash
 
         }
 
-        public void AddMap(string name, Map map)
+        // Register a level to be transitioned to
+        public void AddLevel(string name, Level level)
         {
-            Maps[name] = map;
+            Levels[name] = level;
         }
 
-        public void SetMap(string name)
+        // Move from one level to another
+        public void TransitionToLevel(LevelTransition level)
         {
-            CurrentMap = Maps[name];
-            foreach(Enemy enemy in Enemies[CurrentMap.Name])
-            {
-                CurrentMap.SetEnemies(enemy.GetCoords());
-            }
+            CurrentLevel = Levels[level.LevelTo];
+            CurrentLevel.PlacePlayer(level.NewLocation, Player);
         }
 
+        // Gather input from the console
         public ConsoleKeyInfo GetUserInput()
         {
             ConsoleKeyInfo cki = new ConsoleKeyInfo();
+
             do
             {
                 cki = Console.ReadKey(true);
 
             } while (!Constants.allowedKeys.Contains(cki.Key));
+
             return cki;
         }
 
-        public bool HandleInput(ConsoleKeyInfo key)
+        // Handle user input and transition to new level if needed
+        public void HandleInput(ConsoleKeyInfo key)
         {
-            bool ShouldEnemyMove = true;
+            LevelTransition newLevel = null;
 
-            if (Constants.allowedKeys.Contains(key.Key))
+            // Different user actions
+            switch (key.Key)
             {
-                switch (key.Key)
-                {
-                    case ConsoleKey.W:
-                        Player.Move(CurrentMap, Constants.DIRECTION.NORTH);
-                        break;
-                    case ConsoleKey.A:
-                        Player.Move(CurrentMap, Constants.DIRECTION.WEST);
-                        break;
-                    case ConsoleKey.S:
-                        Player.Move(CurrentMap, Constants.DIRECTION.SOUTH);
-                        break;
-                    case ConsoleKey.D:
-                        Player.Move(CurrentMap, Constants.DIRECTION.EAST);
-                        break;
-                    case ConsoleKey.Spacebar:
-                        Player.Attack(CurrentMap, Enemies[CurrentMap.Name].Where(x => x.Alive).ToList());
-                        break;
-                    case ConsoleKey.Escape:
-                        DisplayMenu();
-                        ShouldEnemyMove = false;
-                        break;
-                }
+                case ConsoleKey.W:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.NORTH);
+                    break;
+                case ConsoleKey.A:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.WEST);
+                    break;
+                case ConsoleKey.S:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.SOUTH);
+                    break;
+                case ConsoleKey.D:
+                    newLevel = CurrentLevel.MovePlayer(Player, Constants.DIRECTION.EAST);
+                    break;
+                case ConsoleKey.Spacebar:
+                    Player.Attack(CurrentLevel);
+                    break;
+                case ConsoleKey.Escape:
+                    DisplayMenu();
+                    break;
+                default:
+                    break;
             }
 
-            return ShouldEnemyMove;
-        }
-
-        public void RegisterEnemy(string name, Enemy enemy)
-        {
-            if(!Enemies.Keys.Contains(name))
+            if(newLevel != null)
             {
-                Enemies[name] = new List<Enemy>();
+                TransitionToLevel(newLevel);
             }
-
-            Enemies[name].Add(enemy);
         }
 
+        // Register a weapon to be used by the player
         public void RegisterWeapon(string name, Weapon weapon)
         {
             Weapons[name] = weapon;
         }
 
+        // Register a consumable item for the player
         public void RegisterItem(string name, UsableItem item)
         {
             UsableItems[name] = item;
         }
 
+        // Register a key item with the game
+        public void RegisterKeyItem(string name, KeyItem item)
+        {
+            KeyItems[name] = item;
+        }
+
+        #region UIMethods
         public void DisplayGameOver()
         {
             Console.Clear();
@@ -137,11 +133,11 @@ namespace HackSlash
         public void DisplayMap()
         {
             Console.Clear();
-            for(int i = 0; i < CurrentMap.Board.GetLength(0); i++)
+            for(int i = 0; i < CurrentLevel.Map.GetLength(0); i++)
             {
-                for(int j = 0; j < CurrentMap.Board.GetLength(1); j++)
+                for(int j = 0; j < CurrentLevel.Map.GetLength(1); j++)
                 {
-                    Console.Write(CurrentMap.Board[i, j]);
+                    Console.Write(CurrentLevel.Map[i, j]);
                 }
 
                 Console.WriteLine();
@@ -166,6 +162,13 @@ namespace HackSlash
         {
             DisplayMap();
             DisplayStats();
+
+            // Display any message that exists to the player
+            if(Game.CurrentMessage != "")
+            {
+                Console.WriteLine(Game.CurrentMessage);
+                Game.CurrentMessage = "";
+            }
         }
 
         public void DisplayMenu()
@@ -192,6 +195,9 @@ namespace HackSlash
                     case ConsoleKey.E:
                         DisplayEquipment();
                         break;
+                    case ConsoleKey.K:
+                        DisplayKeyItems();
+                        break;
                     case ConsoleKey.Q:
                         loop = false;
                         this.Running = false;
@@ -203,6 +209,7 @@ namespace HackSlash
         public void DisplayItems()
         {
             Console.Clear();
+
             if(Player.Inventory.Items.Count > 0)
             {
                 Player.Inventory.VerifyItemCounts();
@@ -214,9 +221,10 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("Item: " + item.Name);
-                    Console.WriteLine("Description: " + item.Description);
-                    Console.WriteLine("Amount: " + item.Amount);
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Items.Count}");
+                    Console.WriteLine($"Item: {item.Name}");
+                    Console.WriteLine($"Description: {item.Description}");
+                    Console.WriteLine($"Amount: {item.Amount}");
 
                     switch (Console.ReadKey(true).Key)
                     {
@@ -234,10 +242,6 @@ namespace HackSlash
                                 index = Player.Inventory.Items.Count - 1;
                             }
                             break;
-                        case ConsoleKey.U:
-                            item.UseItem(Player);
-                            loop = false;
-                            break;
                         case ConsoleKey.Enter:
                             item.UseItem(Player);
                             loop = false;
@@ -249,7 +253,10 @@ namespace HackSlash
                             break;
                     }
 
-                    item = Player.Inventory.Items.ElementAt(index);
+                    if (loop)
+                    {
+                        item = Player.Inventory.Items.ElementAt(index);
+                    }
 
                 } while (loop);
             }
@@ -263,6 +270,7 @@ namespace HackSlash
         public void DisplayEquipment()
         {
             Console.Clear();
+
             if (Player.Inventory.Weapons.Count > 0)
             {
                 int index = 0;
@@ -272,9 +280,10 @@ namespace HackSlash
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("Weapon: " + weapon.Name);
-                    Console.WriteLine("Description: " + weapon.Description);
-                    Console.WriteLine("Power: " + weapon.Strength);
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.Weapons.Count}");
+                    Console.WriteLine($"Weapon: {weapon.Name}");
+                    Console.WriteLine($"Description: {weapon.Description}");
+                    Console.WriteLine($"Power: {weapon.Strength}");
 
                     switch (Console.ReadKey(true).Key)
                     {
@@ -292,10 +301,6 @@ namespace HackSlash
                                 index = Player.Inventory.Weapons.Count - 1;
                             }
                             break;
-                        case ConsoleKey.E:
-                            Player.Equip(weapon);
-                            loop = false;
-                            break;
                         case ConsoleKey.Enter:
                             Player.Equip(weapon);
                             loop = false;
@@ -307,7 +312,11 @@ namespace HackSlash
                             break;
                     }
 
-                    weapon = Player.Inventory.Weapons.ElementAt(index);
+                    if (loop)
+                    {
+                        weapon = Player.Inventory.Weapons.ElementAt(index);
+                    }
+
                 } while (loop);
             }
             else
@@ -317,14 +326,73 @@ namespace HackSlash
             }
         }
 
+        public void DisplayKeyItems()
+        {
+            Console.Clear();
+
+            if(Player.Inventory.KeyItems.Count > 0)
+            {
+                int index = 0;
+                KeyItem item = Player.Inventory.KeyItems.ElementAt(index);
+                bool loop = true;
+
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{index + 1} / {Player.Inventory.KeyItems.Count}");
+                    Console.WriteLine($"Item: {item.Name}");
+                    Console.WriteLine($"Description: {item.Description}");
+
+                    switch(Console.ReadKey(true).Key)
+                    {
+                        case ConsoleKey.N:
+                            index++;
+                            if (index >= Player.Inventory.KeyItems.Count)
+                            {
+                                index = 0;
+                            }
+                            break;
+                        case ConsoleKey.P:
+                            index--;
+                            if (index < 0)
+                            {
+                                index = Player.Inventory.KeyItems.Count - 1;
+                            }
+                            break;
+                        case ConsoleKey.Enter:
+                            loop = false;
+                            break;
+                        case ConsoleKey.Q:
+                            loop = false;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if(loop)
+                    {
+                        item = Player.Inventory.KeyItems.ElementAt(index);
+                    }
+
+                } while (loop);
+            }
+            else
+            {
+                Console.WriteLine("You don't have any key items in your bag...");
+                Console.ReadKey(true);
+            }
+
+        }
+        #endregion
+
         public Game()
         {
-            Enemies = new Dictionary<string, List<Enemy>>();
-            Maps = new Dictionary<string, Map>();
+            Levels = new Dictionary<string, Level>();
             Constants = new Constants();
-            Player = new Player(Constants.START_POINT.Item1, Constants.START_POINT.Item2);
+            Player = new Player();
             Weapons = new Dictionary<string, Weapon>();
             UsableItems = new Dictionary<string, UsableItem>();
+            KeyItems = new Dictionary<string, KeyItem>();
             Running = true;
         }
     }

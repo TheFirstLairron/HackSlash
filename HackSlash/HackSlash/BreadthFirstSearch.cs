@@ -10,6 +10,7 @@ namespace HackSlash
     {
         public BreadthFirstSearch() { }
 
+        // Generate all possible paths through a specific area
         public Dictionary<Tuple<int, int>, Tuple<int, int>> GenerateMap(char[,] map, Tuple<int, int> start, Tuple<int, int> end)
         {
             Queue<Tuple<int, int>> frontier = new Queue<Tuple<int, int>>();
@@ -29,6 +30,7 @@ namespace HackSlash
                     break;
                 }
 
+                // Add neighbors to the queue if they havent been visited and aren't walls
                 foreach (var item in this.GetNeighbors(current))
                 {
                     if (!item.Equals(start))
@@ -51,6 +53,7 @@ namespace HackSlash
             return cameFrom;
         }
 
+        // Generate the final path that the entity will follow
         public List<Tuple<int, int>> GatherPath(Dictionary<Tuple<int, int>, Tuple<int, int>> cameFrom, Tuple<int, int> end)
         {
             List<Tuple<int, int>> path = new List<Tuple<int, int>>();
@@ -68,6 +71,7 @@ namespace HackSlash
             return path;
         }
 
+        // Get the 4 neighboring locations
         public List<Tuple<int, int>> GetNeighbors(Tuple<int, int> pos)
         {
             List<Tuple<int, int>> results = new List<Tuple<int, int>>(4);

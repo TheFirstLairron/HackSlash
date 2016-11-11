@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    public interface UsableItem
+    public interface UsableItem : Item
     {
-        string Name { get; set; }
-        string Description { get; set; }
         int Amount { get; set; }
         bool Kept { get; set; }
         Action<Player> Use { get; set; }

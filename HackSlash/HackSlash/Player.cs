@@ -16,28 +16,29 @@ namespace HackSlash
         private int XCoord { get; set; }
         private int YCoord { get; set; }
 
+        // Determine if the player is still alive
         public bool Alive()
         {
             return Health > 0;
         }
 
+        // Damage the player
         public void TakeDamage(int potentialDamage)
         {
             int trueDamage = 0;
 
-            if(potentialDamage - Defense > 0)
-            {
-                trueDamage = potentialDamage - Defense;
-            }
+            trueDamage = Math.Max(potentialDamage - Defense, 0);
 
             Health -= trueDamage;
         }
 
+        // Heal the player
         public void Heal(int amount)
         {
             Health += amount;
         }
 
+        // Get the damage the player would deal, taking weapon into account
         public int GetDamage()
         {
             int damage = Damage;
@@ -50,66 +51,49 @@ namespace HackSlash
             return damage;
         }
 
+        // Allow the player to equip a weapon
         public void Equip(Weapon weapon)
         {
             Weapon = weapon;
         }
 
+        // Remove a key item from the inventory
+        public void RemoveKeyItem(KeyItem item)
+        {
+            Inventory.RemoveKeyItem(item);
+        }
+
+        // Get the players XY coordinates
         public Tuple<int, int> GetCoords()
         {
             return Tuple.Create(XCoord, YCoord);
         }
 
+        // Set the players XY coordinates
         public void SetCoords(Tuple<int, int> coords)
         {
             XCoord = coords.Item1;
             YCoord = coords.Item2;
         }
 
-        public void Move(Map map, Constants.DIRECTION dir)
+        // Attack adjacent enemies
+        public void Attack(Level level)
         {
-            Tuple<int, int> posToCheck = GetCoords();
-            int xToCheck = posToCheck.Item1;
-            int yToCheck = posToCheck.Item2;
-
-            switch (dir)
+            foreach(Enemy enemy in level.Enemies)
             {
-                case Constants.DIRECTION.NORTH:
-                    xToCheck--;
-                    break;
-
-                case Constants.DIRECTION.EAST:
-                    yToCheck++;
-                    break;
-
-                case Constants.DIRECTION.SOUTH:
-                    xToCheck++;
-                    break;
-
-                case Constants.DIRECTION.WEST:
-                    yToCheck--;
-                    break;
-            }
-
-            if(map.Board[xToCheck, yToCheck] == ' ')
-            {
-                map.Board[posToCheck.Item1, posToCheck.Item2] = ' ';
-                map.Board[xToCheck, yToCheck] = '@';
-                this.SetCoords(new Tuple<int, int>(xToCheck, yToCheck));
-            }
-        }
-
-        public void Attack(Map map, List<Enemy> enemies)
-        {
-            foreach(Enemy enemy in enemies)
-            {
-                if (isEnemyNeighbor(enemy))
+                if (enemy.Alive)
                 {
-                    enemy.TakeDamage(GetDamage(), map);
+                    if (isEnemyNeighbor(enemy))
+                    {
+                        enemy.TakeDamage(GetDamage(), level);
+                    }
                 }
             }
+
+            level.MoveEnemies(this);
         }
 
+        // Detemine if an enemy is in range for attacking
         private bool isEnemyNeighbor(Enemy enemy)
         {
             bool isNeighbor = false;
@@ -137,13 +121,31 @@ namespace HackSlash
             return isNeighbor;
         }
 
-        public Player(int x, int y, int health = 30)
+        // Process the contents of an item box
+        public void ConsumeItemBox(ItemBox box)
+        {
+            if(box.Reward is UsableItem)
+            {
+                Inventory.AddItem(box.Reward as UsableItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
+            else if(box.Reward is KeyItem)
+            {
+                Inventory.AddKeyItem(box.Reward as KeyItem);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
+            else if(box.Reward is Weapon)
+            {
+                Inventory.AddWeapon(box.Reward as Weapon);
+                Game.CurrentMessage = $"You found {box.Reward.Name}";
+            }
+        }
+
+        public Player(int health = 30)
         {
             Health = health;
             Defense = 5;
             Damage = 5;
-            XCoord = x;
-            YCoord = y;
             Inventory = new Inventory();
         }
     }

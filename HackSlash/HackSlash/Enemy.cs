@@ -9,12 +9,15 @@ namespace HackSlash
     public class Enemy
     {
         public int Health { get; private set; }
+        private int Attack { get; set; }
         private int Defense { get; set; }
         private int XCoord { get; set; }
         private int YCoord { get; set; }
         public bool Alive { get; set; }
+        public ItemBox Reward { get; set; }
 
-        public void TakeDamage(int amount, Map map)
+        // Deal damage to the enemy
+        public void TakeDamage(int amount, Level level)
         {
             int trueDamage = 0;
 
@@ -27,74 +30,66 @@ namespace HackSlash
 
             if(Health <= 0)
             {
-                Kill(map);
+                Kill(level);
             }
         }
 
-        public void Kill(Map map)
+        // Get the enemy's raw damage
+        public int GetDamage()
         {
-            map.ResetCell(GetCoords());
+            return Attack;
+        }
+
+        // Remove the enemy from the level
+        public void Kill(Level level)
+        {
+            if(Reward != null)
+            {
+                // Place the reward and register it with the level
+                Reward.XCoord = XCoord;
+                Reward.YCoord = YCoord;
+                level.ItemBoxs.Add(Reward);
+                level.Map[XCoord, YCoord] = (char)Constants.MAP_CHARS.ITEMBOX;
+            }
+            else
+            {
+                // Clear out the cell, there is no reward to drop
+                level.ResetCell(GetCoords());
+            }
             Alive = false;
         }
 
+        // Get the XY coordinates of the enemy
         public Tuple<int, int> GetCoords()
         {
             return Tuple.Create(XCoord, YCoord);
         }
 
+        // Set the XY coordinates of the enemy
         public void SetCoords(Tuple<int, int> coords)
         {
             XCoord = coords.Item1;
             YCoord = coords.Item2;
         }
 
-        public void Move(Map map, Player player, List<Enemy> enemies)
-        {
-            BreadthFirstSearch bfs = new BreadthFirstSearch();
-
-            Tuple<int, int> selfCoords = this.GetCoords();
-            Tuple<int, int> nextMove = null;
-
-            var graph = bfs.GenerateMap(map.Board, selfCoords, player.GetCoords());
-
-            var path = bfs.GatherPath(graph, player.GetCoords());
-
-            if(path.Count > 1)
-            {
-                nextMove = path.ElementAt(1);
-                if (CanMove(nextMove, map))
-                {
-                    this.SetCoords(nextMove);
-                    map.Board[selfCoords.Item1, selfCoords.Item2] = ' ';
-                    map.Board[nextMove.Item1, nextMove.Item2] = '*';
-                }
-            }
-            else if(path.Count == 1)
-            {
-                player.TakeDamage(10);
-            }
-
-
-        }
-
-        bool CanMove(Tuple<int, int> pos, Map map)
-        {
-            bool canMove = true;
-            if (map.Board[pos.Item1, pos.Item2] != ' ')
-            {
-                canMove = false;
-            }
-
-            return canMove;
-        }
-
-        public Enemy(int health = 10, int defense = 10, int x = 0, int y = 0)
+        public Enemy(int health = 10, int attack = 5, int defense = 10, int x = 0, int y = 0)
         {
             Health = health;
+            Attack = attack;
             Defense = defense;
             XCoord = x;
             YCoord = y;
-            Alive = true;
+            Reward = null;
+
+            if (Health > 1)
+            {
+                Alive = true;
+            }
+            else
+            {
+                Alive = false;
+            }
         }
+
     }
 }

@@ -6,18 +6,15 @@ using System.Threading.Tasks;
 
 namespace HackSlash
 {
-    class HealingItem : UsableItem
+    class HealingItem : Item, UsableItem
     {
         public int Amount { get; set; }
-
         public string Description { get; set; }
-
         public bool Kept { get; set; }
-
         public string Name { get; set; }
-
         public Action<Player> Use { get; set; }
 
+        // Use the item if there are remaining uses in it, and remove if there arent any remaining uses
         public void UseItem(Player player)
         {
             if(Amount > 0)
